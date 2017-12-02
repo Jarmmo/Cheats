@@ -1,0 +1,8 @@
+"Cheats!"
+{
+	"base"		"base"
+	"title"		"Cheats!"
+	"maps"		"^de_|^cs_|^as_"
+	"menusystem"	"1"
+	"workshopid"	""
+}
