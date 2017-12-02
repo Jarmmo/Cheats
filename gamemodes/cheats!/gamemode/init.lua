@@ -26,7 +26,7 @@ function GM:PlayerSpawn( ply )
 	ply:SetModel(table.Random(PlayerModels))
 	ply:SetPlayerColor(Vector(200,100,100))	
 	ply:SetJumpPower(300)
-	--ply:GetActiveWeapon():SetClip1(999)
+	ply:GiveAmmo(99999999, "SMG1", true)
 	ply:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
 	hook.Call( "PlayerLoadout", GAMEMODE, ply )
 end
