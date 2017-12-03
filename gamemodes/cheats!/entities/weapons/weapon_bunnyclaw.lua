@@ -45,13 +45,13 @@ function SWEP:Initialize()
 end
 
 function SWEP:PrimaryAttack()
-	if !SERVER then return end
-	
+
 	local ply = self:GetOwner()
 	ply:LagCompensation(true)
 
 	self.Weapon:SendWeaponAnim(ACT_VM_HITCENTER)
 	ply:SetAnimation(PLAYER_ATTACK1)
+	if !SERVER then return end
 
 	local shootpos = ply:GetShootPos()
 	local hitpos = shootpos + ply:GetAimVector()*70
@@ -85,13 +85,13 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:SecondaryAttack()
-	if !SERVER then return end
-	
+
 	local ply = self:GetOwner()
 	ply:LagCompensation(true)
 
-	self.Weapon:SendWeaponAnim(ACT_VM_HITCENTER)
+	self.Weapon:SendWeaponAnim(ACT_VM_MISSCENTER)
 	ply:SetAnimation(PLAYER_ATTACK1)
+	if !SERVER then return end
 
 	local shootpos = ply:GetShootPos()
 	local hitpos = shootpos + ply:GetAimVector()*50
