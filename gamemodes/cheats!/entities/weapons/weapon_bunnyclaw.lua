@@ -51,6 +51,11 @@ function SWEP:PrimaryAttack()
 
 	self.Weapon:SendWeaponAnim(ACT_VM_HITCENTER)
 	ply:SetAnimation(PLAYER_ATTACK1)
+
+	timer.Simple(ply:SequenceDuration(),function()
+		self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
+	end)
+
 	if !SERVER then return end
 
 	local shootpos = ply:GetShootPos()
@@ -91,6 +96,11 @@ function SWEP:SecondaryAttack()
 
 	self.Weapon:SendWeaponAnim(ACT_VM_MISSCENTER)
 	ply:SetAnimation(PLAYER_ATTACK1)
+
+	timer.Simple(ply:SequenceDuration(),function()
+		self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
+	end)
+	
 	if !SERVER then return end
 
 	local shootpos = ply:GetShootPos()

@@ -38,7 +38,6 @@ end
 
 function SWEP:PrimaryAttack()
 	
-
 	if (self.Weapon:Clip1() <= 0) then
 		self:EmitSound( "Weapon_Pistol.Empty" )
 		self:SetNextPrimaryFire( CurTime() + 0.2 )
@@ -52,9 +51,10 @@ function SWEP:PrimaryAttack()
 	Bullet.Src = ply:GetShootPos()
 	Bullet.Dir = ply:GetAimVector()
 	Bullet.Spread = Vector(self.Primary.Spread,self.Primary.Spread,0)
-	Bullet.Tracer = 0
+	Bullet.Tracer = 1
 	Bullet.Damage = 30
 	Bullet.Ammotype = self.Primary.Ammo
+	Bullet.Attacker = ply
 
 	self:FireBullets(Bullet)
 
