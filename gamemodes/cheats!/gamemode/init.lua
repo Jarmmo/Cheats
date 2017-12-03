@@ -70,3 +70,91 @@ end
 RunConsoleCommand( "sv_sticktoground","0" )
 RunConsoleCommand( "sv_airaccelerate","1000" )
 RunConsoleCommand( "sv_gravity","900" )
+
+util.AddNetworkString("votemap")
+util.AddNetworkString("votemap_vote")
+
+local active = false
+
+local ass = {}
+local votings = {}
+local votedplayers = {}
+
+function startvote()
+	local maps = 0
+
+	for k,v in pairs(file.Find("maps/cs_*.bsp","GAME")) do
+		if(maps < 16) then
+			table.insert(ass, v)
+		end
+		maps = maps + 1
+	end
+
+	for k,v in pairs(file.Find("maps/de_*.bsp","GAME")) do
+		if(maps < 16) then
+			table.insert(ass, v)
+		end
+		maps = maps + 1
+	end
+
+	for k,v in pairs(ass) do
+		votings[v] = 0
+	end
+
+	active = true
+
+	net.Start("votemap")
+	net.WriteTable(ass)
+	net.Broadcast()
+
+	timer.Simple(30, function()
+		active = false
+		ass = {}
+		votedplayers = {}
+		local namemap = ""
+		local score = 0
+
+		for k,v in pairs(votings) do
+			if(v > score) then
+				score = v
+				namemap = k
+			end
+		end
+
+		timer.Simple(5,function()
+			if score ~= 0 then
+				RunConsoleCommand("changelevel", string.StripExtension( namemap ))
+			end
+		end)
+	end)
+end
+
+hook.Add("PlayerSay", "votemap", function(ply,txt)
+
+	if active then
+		local exists = false
+
+		for k,v in pairs(votedplayers) do
+			if(ply == v) then
+				exists = true
+			end
+		end
+
+		if not exists then
+			local yes = tonumber(txt)
+			if yes then 
+				if ass[yes] then
+					votings[ass[yes]] = votings[ass[yes]] + 1
+					table.insert(votedplayers, ply)
+					net.Start("votemap_vote")
+					net.WriteString(ass[yes])
+					net.Broadcast()
+				end
+			end
+		end
+	end
+end)
+
+concommand.Add("votemap",function()
+	startvote()
+end)
