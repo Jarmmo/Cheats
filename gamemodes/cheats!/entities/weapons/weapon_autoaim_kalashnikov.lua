@@ -55,7 +55,7 @@ function SWEP:PrimaryAttack()
 	Bullet.Damage = 30
 	Bullet.Ammotype = self.Primary.Ammo
 	Bullet.Attacker = ply
-	Bullet.HullSize = 10
+	Bullet.HullSize = 3
 
 	self:FireBullets(Bullet)
 
