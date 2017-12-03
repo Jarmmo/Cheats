@@ -1,5 +1,5 @@
 AddCSLuaFile("util/votemap.lua")
-include 'util/votemap.lua'
+include ("util/votemap.lua")
 
 GM.Name 	= "Cheats!"
 GM.Author 	= "Jarmmo"
