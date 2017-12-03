@@ -111,7 +111,7 @@ if CLIENT then
 	end)
 end
 
-local function CheckFOV(target,PixelDifference)
+local function CheckLOS(target)
 	local pos = target:GetBonePosition(target:LookupBone("ValveBiped.Bip01_Spine2"))
 	local trace = util.TraceLine({
 		start = pos,
@@ -123,10 +123,12 @@ local function CheckFOV(target,PixelDifference)
 	if(trace.Fraction != 1)then
 		return false
 	end
+	return true
+end
 
-
+local function CheckFOV(target,PixelDifference)
 	local W,H = ScrW()/2,ScrH()/2
-	local ScreenPos = pos:ToScreen()
+	local ScreenPos = target:GetBonePosition(target:LookupBone("ValveBiped.Bip01_Spine2")):ToScreen()
 	local Dist = Vector(W,H,0):Distance(Vector(ScreenPos.x,ScreenPos.y,0))
 	if Dist < PixelDifference then 
 		return true
@@ -154,13 +156,37 @@ end
 hook.Add("Think","AIMBOT",function() 
 	if !SnapAim then return end
 
-	if(not LocalPlayer():GetActiveWeapon():GetClass() == "weapon_autoaim_kalashnikov") then return end
-	local ply = LocalPlayer()
+	if(LocalPlayer():GetActiveWeapon():GetClass() == "weapon_autoaim_kalashnikov") then
+		local ply = LocalPlayer()
 
-	local target = FindNearestToCrosshair()
+		local target = FindNearestToCrosshair()
 
-	if (IsValid(target)and(target:IsPlayer() or target:IsNPC()) and (CheckFOV(target,300))) then
-		local targetbonepos = target:GetBonePosition(target:LookupBone("ValveBiped.Bip01_Spine2"))+(target:GetVelocity():GetNormalized()*target:GetVelocity():Length()/10)
-		ply:SetEyeAngles((targetbonepos - ply:EyePos()):Angle())
+		if (IsValid(target)and(target:IsPlayer() or target:IsNPC()) and (CheckFOV(target,300) and CheckLOS(target))) then
+			local targetbonepos = target:GetBonePosition(target:LookupBone("ValveBiped.Bip01_Spine2"))+(target:GetVelocity():GetNormalized()*target:GetVelocity():Length()/10)
+			ply:SetEyeAngles((targetbonepos - ply:EyePos()):Angle())
+		end
+	end
+end)
+
+hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
+	if(LocalPlayer():GetActiveWeapon():GetClass() == "weapon_autoaim_kalashnikov") then
+		for k,target in pairs(ents.GetAll())do
+			if (IsValid(target)and(target:IsPlayer() or target:IsNPC()) and CheckLOS(target)) then
+				local targetipos = target:GetBonePosition(target:LookupBone("ValveBiped.Bip01_Spine2")):ToScreen()
+				for i = 7.5, 4.5, -1 do
+					surface.DrawCircle(targetipos.x, targetipos.y, i,0,255,0,100)
+				end
+				surface.DrawCircle(targetipos.x, targetipos.y, 7.9,0,255,0,10)
+				surface.DrawCircle(targetipos.x, targetipos.y, 8.3,0,255,0,1)
+				local atarget = FindNearestToCrosshair()
+				if (IsValid(atarget)and(atarget:IsPlayer() or atarget:IsNPC()))then
+					local atargetipos = atarget:GetBonePosition(atarget:LookupBone("ValveBiped.Bip01_Spine2")):ToScreen()
+					if(CheckFOV(atarget,300)and CheckLOS(atarget)and !SnapAim)then
+						surface.SetDrawColor(0,255,0,255)
+						surface.DrawLine( ScrW()/2, ScrH()/2, atargetipos.x, atargetipos.y)
+					end
+				end
+			end
+		end
 	end
 end)
