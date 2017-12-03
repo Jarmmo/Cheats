@@ -50,7 +50,7 @@ function SWEP:PrimaryAttack()
 	Bullet.Num = 1
 	Bullet.Src = ply:GetShootPos()
 	Bullet.Dir = ply:GetAimVector()
-	Bullet.Spread = Vector(self.Primary.Spread,self.Primary.Spread,0)
+	Bullet.Spread = Vector(0,0,0)
 	Bullet.Tracer = 1
 	Bullet.Damage = 30
 	Bullet.Ammotype = self.Primary.Ammo
@@ -153,7 +153,7 @@ hook.Add("CreateMove","AIMBOT",function(asd)
 			local target = FindNearestToCrosshair()
 
 			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or target:IsNPC()) and (CheckFOV(target,300) and CheckLOS(target))) then
-				local targetbonepos = target:GetBonePosition(target:LookupBone(targetbone))+Vector(0,0,3)
+				local targetbonepos = target:GetBonePosition(target:LookupBone(targetbone))
 				asd:SetViewAngles((targetbonepos - ply:EyePos()):Angle())
 			end
 		end
