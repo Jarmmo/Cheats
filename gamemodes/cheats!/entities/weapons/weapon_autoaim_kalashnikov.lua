@@ -50,11 +50,12 @@ function SWEP:PrimaryAttack()
 	Bullet.Num = 1
 	Bullet.Src = ply:GetShootPos()
 	Bullet.Dir = ply:GetAimVector()
-	Bullet.Spread = Vector(0,0,0)
+	Bullet.Spread = Vector(self.Primary.Spread,self.Primary.Spread,0)
 	Bullet.Tracer = 1
 	Bullet.Damage = 30
 	Bullet.Ammotype = self.Primary.Ammo
 	Bullet.Attacker = ply
+	Bullet.HullSize = 10
 
 	self:FireBullets(Bullet)
 
@@ -70,6 +71,25 @@ function SWEP:PrimaryAttack()
 	self:SetNextPrimaryFire(CurTime()+0.1)
 
 	--ply:LagCompensation(false)
+end
+
+local SnapAim = false
+
+if CLIENT then
+	hook.Add("KeyPress","FOVAIM_ON",function(ply,key)
+		if(!IsValid(ply))then return end
+		if(!IsValid(ply:GetActiveWeapon())) then return end
+		if(ply:GetActiveWeapon():GetClass() == "weapon_autoaim_kalashnikov" and key == IN_ATTACK)then
+			SnapAim = true
+		end
+	end)
+	hook.Add("KeyRelease","FOVAIM_OFF",function(ply,key)
+		if(!IsValid(ply))then return end
+		if(!IsValid(ply:GetActiveWeapon())) then return end
+		if(key == IN_ATTACK)then
+			SnapAim = false
+		end
+	end)
 end
 
 function SWEP:CanSecondaryAttack()
@@ -136,8 +156,6 @@ local function FindNearestToCrosshair()
 	return nearestEnt
 end
 
-local SnapAim = false
-
 hook.Add("CreateMove","AIMBOT",function(asd)
 	if (input.IsButtonDown(MOUSE_RIGHT))then
 		SnapAim = true
@@ -153,7 +171,7 @@ hook.Add("CreateMove","AIMBOT",function(asd)
 			local target = FindNearestToCrosshair()
 
 			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or target:IsNPC()) and (CheckFOV(target,300) and CheckLOS(target))) then
-				local targetbonepos = target:GetBonePosition(target:LookupBone(targetbone))
+				local targetbonepos = target:GetBonePosition(target:LookupBone(targetbone))+Vector(0,0,3)
 				asd:SetViewAngles((targetbonepos - ply:EyePos()):Angle())
 			end
 		end
