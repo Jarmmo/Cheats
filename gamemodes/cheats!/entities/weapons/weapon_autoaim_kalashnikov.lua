@@ -171,7 +171,7 @@ hook.Add("CreateMove","AIMBOT",function(asd)
 			local target = FindNearestToCrosshair()
 
 			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or target:IsNPC()) and (CheckFOV(target,300) and CheckLOS(target))) then
-				local targetbonepos = target:GetBonePosition(target:LookupBone(targetbone))+Vector(0,0,3)
+				local targetbonepos = target:GetBonePosition(target:LookupBone(targetbone))
 				asd:SetViewAngles((targetbonepos - ply:EyePos()):Angle())
 			end
 		end
