@@ -41,7 +41,8 @@ local miss = {
 local hitworld = Sound("weapons/knife/knife_hitwall1.wav")
 
 function SWEP:Initialize()
-	self:SetWeaponHoldType("knife")
+	self:SetHoldType("knife")
+	self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
 end
 
 function SWEP:PrimaryAttack()
@@ -51,12 +52,6 @@ function SWEP:PrimaryAttack()
 
 	self.Weapon:SendWeaponAnim(ACT_VM_HITCENTER)
 	ply:SetAnimation(PLAYER_ATTACK1)
-
-	timer.Remove("BCIDLEANIM")
-
-	timer.Create("BCIDLEANIM", ply:SequenceDuration(), 1, function()
-		self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
-	end)
 
 	if !SERVER then return end
 
@@ -98,13 +93,7 @@ function SWEP:SecondaryAttack()
 
 	self.Weapon:SendWeaponAnim(ACT_VM_MISSCENTER)
 	ply:SetAnimation(PLAYER_ATTACK1)
-
-	timer.Remove("BCIDLEANIM")
-
-	timer.Create("BCIDLEANIM", ply:SequenceDuration(), 1, function()
-		self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
-	end)
-
+	
 	if !SERVER then return end
 
 	local shootpos = ply:GetShootPos()
