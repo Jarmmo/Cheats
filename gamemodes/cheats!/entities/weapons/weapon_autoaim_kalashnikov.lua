@@ -185,19 +185,38 @@ hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
 		for k,target in pairs(ents.GetAll())do
 			if (IsValid(target)and(target:IsPlayer() or target:IsNPC()) and target != LocalPlayer() and CheckLOS(target)) then
 				local targetipos = target:GetBonePosition(target:LookupBone(targetbone)):ToScreen()
-				local sizeb = 13.5
+				local sizeb = 14
 				local sizes = 10.5
 				for i = sizeb, sizes, -1 do
-					surface.DrawCircle(targetipos.x, targetipos.y, i,0,255,0,100)
+					surface.DrawCircle(targetipos.x, targetipos.y, i,255,100,100,100)
 				end
-				surface.DrawCircle(targetipos.x, targetipos.y, sizeb+0.3,0,255,0,10)
-				surface.DrawCircle(targetipos.x, targetipos.y, sizeb+0.5,0,255,0,1)
+				surface.DrawCircle(targetipos.x, targetipos.y, sizeb+0.2,255,100,100,20)
+				surface.DrawCircle(targetipos.x, targetipos.y, sizeb+0.5,255,100,100,10)
+
+				surface.DrawCircle(targetipos.x, targetipos.y, sizes-0.2,255,100,100,20)
+				surface.DrawCircle(targetipos.x, targetipos.y, sizes-0.5,255,100,100,10)
+
 				local atarget = FindNearestToCrosshair()
 				if (IsValid(atarget)and(atarget:IsPlayer() or atarget:IsNPC()))then
 					local atargetipos = atarget:GetBonePosition(atarget:LookupBone(targetbone)):ToScreen()
 					if(CheckFOV(atarget,300)and CheckLOS(atarget)and !SnapAim)then
-						surface.SetDrawColor(0,255,0,255)
-						surface.DrawLine( ScrW()/2, ScrH()/2, atargetipos.x, atargetipos.y)
+
+						local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
+
+						surface.SetDrawColor(255,100,100,255)
+						surface.DrawLine( hitpos.x, hitpos.y, atargetipos.x, atargetipos.y)
+
+						surface.SetDrawColor(255,100,100,30)
+						surface.DrawLine( hitpos.x+1, hitpos.y, atargetipos.x+1, atargetipos.y)
+						surface.DrawLine( hitpos.x, hitpos.y+1, atargetipos.x, atargetipos.y+1)
+						surface.DrawLine( hitpos.x, hitpos.y-1, atargetipos.x, atargetipos.y-1)
+						surface.DrawLine( hitpos.x-1, hitpos.y, atargetipos.x-1, atargetipos.y)
+
+						surface.SetDrawColor(255,100,100,20)
+						surface.DrawLine( hitpos.x+1, hitpos.y+1, atargetipos.x+1, atargetipos.y+1)
+						surface.DrawLine( hitpos.x-1, hitpos.y+1, atargetipos.x-1, atargetipos.y+1)
+						surface.DrawLine( hitpos.x+1, hitpos.y-1, atargetipos.x+1, atargetipos.y-1)
+						surface.DrawLine( hitpos.x-1, hitpos.y-1, atargetipos.x-1, atargetipos.y-1)
 					end
 				end
 			end
