@@ -7,3 +7,5 @@ This is not a way for you to cheat on legitimate servers
 
 # Join the discord!
 https://discord.gg/PRyJ5Qc
+
+![alt text](https://raw.githubusercontent.com/Jarmmo/Cheats/master/gamemodes/cheats!/CHEATLOGO.png "Titties")
