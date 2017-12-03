@@ -52,7 +52,9 @@ function SWEP:PrimaryAttack()
 	self.Weapon:SendWeaponAnim(ACT_VM_HITCENTER)
 	ply:SetAnimation(PLAYER_ATTACK1)
 
-	timer.Simple(ply:SequenceDuration(),function()
+	timer.Remove("BCIDLEANIM")
+
+	timer.Create("BCIDLEANIM", ply:SequenceDuration(), 1, function()
 		self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
 	end)
 
@@ -97,10 +99,12 @@ function SWEP:SecondaryAttack()
 	self.Weapon:SendWeaponAnim(ACT_VM_MISSCENTER)
 	ply:SetAnimation(PLAYER_ATTACK1)
 
-	timer.Simple(ply:SequenceDuration(),function()
+	timer.Remove("BCIDLEANIM")
+
+	timer.Create("BCIDLEANIM", ply:SequenceDuration(), 1, function()
 		self.Weapon:SendWeaponAnim(ACT_VM_IDLE)
 	end)
-	
+
 	if !SERVER then return end
 
 	local shootpos = ply:GetShootPos()
@@ -136,7 +140,7 @@ end
 
 function SWEP:Think()
 	if !CLIENT then return end
-	if input.IsKeyDown(KEY_SPACE) and !self:GetOwner():IsTyping() and self:GetOwner():IsOnGround() then
+	if input.IsKeyDown(KEY_SPACE) and !vgui.CursorVisible() and self:GetOwner():IsOnGround() then
 		RunConsoleCommand("+jump")
 		timer.Create("BHOP",0,0,function()
 			RunConsoleCommand("-jump")
