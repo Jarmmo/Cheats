@@ -47,6 +47,8 @@ end
 
 function SWEP:PrimaryAttack()
 
+	if ( !self:CanPrimaryAttack() ) then return end
+
 	local ply = self:GetOwner()
 	ply:LagCompensation(true)
 
