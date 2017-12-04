@@ -7,7 +7,7 @@ SWEP.ViewModel = "models/weapons/v_knife_t.mdl"
 SWEP.WorldModel = "models/weapons/w_knife_t.mdl"
 SWEP.UseHands = true
 SWEP.SetHoldType = "knife"
-SWEP.Weight = 100
+SWEP.Weight = 1
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 SWEP.Slot = 0
@@ -47,8 +47,6 @@ end
 
 function SWEP:PrimaryAttack()
 
-	if ( !self:CanPrimaryAttack() ) then return end
-
 	local ply = self:GetOwner()
 	ply:LagCompensation(true)
 
@@ -58,9 +56,9 @@ function SWEP:PrimaryAttack()
 	if !SERVER then return end
 
 	local shootpos = ply:GetShootPos()
-	local hitpos = shootpos + ply:GetAimVector()*70
-	local tmin = Vector(1,1,1)*-10
-	local tmax = Vector(1,1,1)*10
+	local hitpos = shootpos + ply:GetAimVector()*75
+	local tmin = Vector(1,1,1)*-15
+	local tmax = Vector(1,1,1)*15
 
 	local tr = util.TraceHull({
 		start = shootpos,
@@ -99,9 +97,9 @@ function SWEP:SecondaryAttack()
 	if !SERVER then return end
 
 	local shootpos = ply:GetShootPos()
-	local hitpos = shootpos + ply:GetAimVector()*50
-	local tmin = Vector(1,1,1)*-10
-	local tmax = Vector(1,1,1)*10
+	local hitpos = shootpos + ply:GetAimVector()*65
+	local tmin = Vector(1,1,1)*-15
+	local tmax = Vector(1,1,1)*15
 
 	local tr = util.TraceHull({
 		start = shootpos,

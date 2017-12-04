@@ -7,7 +7,7 @@ SWEP.ViewModel = "models/weapons/v_rif_ak47.mdl"
 SWEP.WorldModel = "models/weapons/w_rif_ak47.mdl"
 SWEP.UseHands = true
 SWEP.SetHoldType = "ar2"
-SWEP.Weight = 100
+SWEP.Weight = 2
 SWEP.DrawAmmo = true
 SWEP.DrawCrosshair = false
 SWEP.ViewModelFlip = true
@@ -16,6 +16,7 @@ SWEP.SlotPos = 1
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
 SWEP.m_WeaponDeploySpeed = 1
+SWEP.CSMuzzleFlashes = true
 
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.DefaultClip = 30
@@ -37,7 +38,6 @@ function SWEP:Initialize()
 end
 
 function SWEP:PrimaryAttack()
-	if ( !self:CanPrimaryAttack() ) then return end
 
 	if (self.Weapon:Clip1() <= 0) then
 		self:EmitSound( "Weapon_Pistol.Empty" )
@@ -53,15 +53,12 @@ function SWEP:PrimaryAttack()
 	Bullet.Dir = ply:GetAimVector()
 	Bullet.Spread = Vector(self.Primary.Spread,self.Primary.Spread,0)
 	Bullet.Tracer = 1
-	Bullet.Damage = 30
+	Bullet.Damage = 10+math.Rand(5,10)
 	Bullet.Ammotype = self.Primary.Ammo
 	Bullet.Attacker = ply
-	Bullet.HullSize = 3
+	Bullet.HullSize = 1
 
 	self:FireBullets(Bullet)
-
-
-	--ply:LagCompensation(true)
 
 	self:TakePrimaryAmmo(1)
 	if SERVER then ply:EmitSound(shoot) end
@@ -70,8 +67,6 @@ function SWEP:PrimaryAttack()
 	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
 	ply:SetAnimation(PLAYER_ATTACK1)
 	self:SetNextPrimaryFire(CurTime()+0.1)
-
-	--ply:LagCompensation(false)
 end
 
 local SnapAim = false
@@ -106,15 +101,17 @@ if !CLIENT then return end
 function SWEP:Think()
 	local vel = self:GetOwner():GetVelocity():Length()/15
 	if(self:GetOwner():Crouching())then
-		self.Primary.Spread = (vel/500)+0.005
+		self.Primary.Spread = (vel/500)+0.02
 	else
-		self.Primary.Spread = (vel/50)+0.01
+		self.Primary.Spread = (vel/50)+0.025
 	end
 	return
 end
 
+local targetbone = "ValveBiped.Bip01_Head1"
+
 local function CheckLOS(target)
-	local pos = target:GetBonePosition(target:LookupBone("ValveBiped.Bip01_Spine2"))
+	local pos = target:GetBonePosition(target:LookupBone(targetbone))
 	local trace = util.TraceLine({
 		start = pos,
 		endpos = LocalPlayer():GetShootPos(),
@@ -127,8 +124,6 @@ local function CheckLOS(target)
 	end
 	return true
 end
-
-local targetbone = "ValveBiped.Bip01_Head1"
 
 local function CheckFOV(target,PixelDifference)
 	local W,H = ScrW()/2,ScrH()/2
@@ -171,7 +166,7 @@ hook.Add("CreateMove","AIMBOT",function(asd)
 
 			local target = FindNearestToCrosshair()
 
-			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or target:IsNPC()) and (CheckFOV(target,300) and CheckLOS(target))) then
+			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or target:IsNPC()) and (CheckFOV(target,200) and CheckLOS(target))) then
 				local targetbonepos = target:GetBonePosition(target:LookupBone(targetbone))
 				asd:SetViewAngles((targetbonepos - ply:EyePos()):Angle())
 			end
@@ -199,7 +194,7 @@ hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
 				local atarget = FindNearestToCrosshair()
 				if (IsValid(atarget)and(atarget:IsPlayer() or atarget:IsNPC()))then
 					local atargetipos = atarget:GetBonePosition(atarget:LookupBone(targetbone)):ToScreen()
-					if(CheckFOV(atarget,300)and CheckLOS(atarget)and !SnapAim)then
+					if(CheckFOV(atarget,200)and CheckLOS(atarget)and !SnapAim)then
 
 						local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
 
