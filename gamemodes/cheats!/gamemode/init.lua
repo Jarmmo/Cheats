@@ -24,6 +24,7 @@ local PlayerModels = {
 }
 
 function GM:PlayerSpawn( ply )
+	ply:AddEFlags(EFL_IN_SKYBOX)
 	ply:SetModel(table.Random(PlayerModels))
 	ply:SetPlayerColor(Vector(200,100,100))	
 	ply:SetJumpPower(300)
@@ -40,7 +41,6 @@ end
 
 function GM:PlayerInitialSpawn( ply )
 	ply:SetTeam( 1 )
-	hook.Call()
 end
 
 function GM:CanPlayerSuicide(ply)
@@ -65,6 +65,12 @@ end
 function GM:GetFallDamage(ply)
 	if(ply:GetActiveWeapon():GetClass() == "weapon_bunnyclaw")then
 		return 0
+	end
+end
+
+function GM:InitPostEntity( ent )
+	for k,v in pairs(ents.GetAll())do
+		v:AddEFlags( EFL_IN_SKYBOX )
 	end
 end
 
