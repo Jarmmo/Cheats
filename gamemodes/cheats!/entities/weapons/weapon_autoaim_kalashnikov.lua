@@ -37,7 +37,6 @@ function SWEP:Initialize()
 end
 
 function SWEP:PrimaryAttack()
-	if ( !self:CanPrimaryAttack() ) then return end
 
 	if (self.Weapon:Clip1() <= 0) then
 		self:EmitSound( "Weapon_Pistol.Empty" )
