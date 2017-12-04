@@ -166,7 +166,7 @@ hook.Add("CreateMove","AIMBOT",function(asd)
 
 			local target = FindNearestToCrosshair()
 
-			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or target:IsNPC()) and (CheckFOV(target,200) and CheckLOS(target))) then
+			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or (target:IsNPC() and target:Health() >= 0)) and (CheckFOV(target,200) and CheckLOS(target))) then
 				local targetbonepos = target:GetBonePosition(target:LookupBone(targetbone))
 				asd:SetViewAngles((targetbonepos - ply:EyePos()):Angle())
 			end
@@ -178,18 +178,15 @@ hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
 	local wep = LocalPlayer():GetActiveWeapon()
 	if(IsValid(wep) and wep:GetClass() == "weapon_autoaim_kalashnikov") then
 		for k,target in pairs(ents.GetAll())do
-			if (IsValid(target)and(target:IsPlayer() or target:IsNPC()) and target != LocalPlayer() and CheckLOS(target)) then
-				local targetipos = target:GetBonePosition(target:LookupBone(targetbone)):ToScreen()
-				local sizeb = 14
-				local sizes = 10.5
-				for i = sizeb, sizes, -1 do
-					surface.DrawCircle(targetipos.x, targetipos.y, i,255,100,100,100)
-				end
-				surface.DrawCircle(targetipos.x, targetipos.y, sizeb+0.2,255,100,100,20)
-				surface.DrawCircle(targetipos.x, targetipos.y, sizeb+0.5,255,100,100,10)
+			if (IsValid(target)and(target:IsPlayer() or (target:IsNPC() and target:Health() >= 0)) and target != LocalPlayer() and CheckLOS(target)) then
+				local targetipos = target:GetBonePosition(target:LookupBone(targetbone))
+				local targetcompare = (targetipos+Vector(0,0,1)):ToScreen()
+				local sizeb = math.Distance(targetipos:ToScreen().x,targetipos:ToScreen().y,targetcompare.x,targetcompare.y)*15
 
-				surface.DrawCircle(targetipos.x, targetipos.y, sizes-0.2,255,100,100,20)
-				surface.DrawCircle(targetipos.x, targetipos.y, sizes-0.5,255,100,100,10)
+				surface.SetDrawColor(255,100,100,100)
+				surface.DrawRect(targetipos:ToScreen().x-sizeb/2,targetipos:ToScreen().y-sizeb/2,sizeb,sizeb)
+				surface.DrawOutlinedRect(targetipos:ToScreen().x-sizeb/2,targetipos:ToScreen().y-sizeb/2,sizeb,sizeb)
+
 
 				local atarget = FindNearestToCrosshair()
 				if (IsValid(atarget)and(atarget:IsPlayer() or atarget:IsNPC()))then
