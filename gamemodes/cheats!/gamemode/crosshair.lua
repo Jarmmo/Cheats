@@ -13,15 +13,11 @@ function draw.Circle( x, y, radius, seg )
 	surface.DrawPoly( cir )
 end
 
-local V_customcrosshair = CreateClientConVar("Customcrosshair","1",false)
-
 function F_Crosshair()
-	if V_customcrosshair:GetBool() then
-		local CPos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
-		surface.SetDrawColor( 255,100,100, 200)
-		draw.Circle(CPos.x,CPos.y,4.5,8)
-		surface.SetDrawColor( 255,100,100, 255)
-		draw.Circle(CPos.x,CPos.y,4,8)
-	end
+	local CPos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
+	surface.SetDrawColor( 255,100,100, 200)
+	draw.Circle(CPos.x,CPos.y,4.5,8)
+	surface.SetDrawColor( 255,100,100, 255)
+	draw.Circle(CPos.x,CPos.y,4,8)
 end
 hook.Add("HUDPaint","Crosshairi",F_Crosshair)
