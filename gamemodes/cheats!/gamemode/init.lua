@@ -24,7 +24,6 @@ local PlayerModels = {
 }
 
 function GM:PlayerSpawn( ply )
-	ply:AddEFlags(EFL_IN_SKYBOX)
 	ply:SetModel(table.Random(PlayerModels))
 	ply:SetPlayerColor(Vector(200,100,100))	
 	ply:SetJumpPower(300)
@@ -36,6 +35,7 @@ end
 function GM:PlayerLoadout(ply)
 	ply:Give("weapon_bunnyclaw")
 	ply:Give("weapon_autoaim_kalashnikov")
+	ply:Give("weapon_awp")
 	return true
 end
 

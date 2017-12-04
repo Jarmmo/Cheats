@@ -38,13 +38,17 @@ function SWEP:Initialize()
 end
 
 function SWEP:PrimaryAttack()
-
 	if (self.Weapon:Clip1() <= 0) then
 		self:EmitSound( "Weapon_Pistol.Empty" )
 		self:SetNextPrimaryFire( CurTime() + 0.2 )
 		return
 	end
+
+	if (!self:CanPrimaryAttack()) then return end
+
 	local ply = self:GetOwner()
+
+	ply:LagCompensation(true)
 
 	local Bullet = {}
 
@@ -59,44 +63,21 @@ function SWEP:PrimaryAttack()
 	Bullet.HullSize = 1
 
 	self:FireBullets(Bullet)
+	self:ShootEffects()
 
+	self:EmitSound(shoot)
+	self.BaseClass.ShootEffects(self)
 	self:TakePrimaryAmmo(1)
-	if SERVER then ply:EmitSound(shoot) end
-	
-	self.Owner:ViewPunch( Angle( -0.5, math.Rand(-0.5,0.5), 0 ) )
-	self.Weapon:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-	ply:SetAnimation(PLAYER_ATTACK1)
 	self:SetNextPrimaryFire(CurTime()+0.1)
-end
+	ply:ViewPunch(Angle(-0.5,math.Rand(-0.5,0.5),0))
 
-local SnapAim = false
-
-if CLIENT then
-	hook.Add("KeyPress","FOVAIM_ON",function(ply,key)
-		if(!IsValid(ply))then return end
-		if(!IsValid(ply:GetActiveWeapon())) then return end
-		if(ply:GetActiveWeapon():GetClass() == "weapon_autoaim_kalashnikov" and key == IN_ATTACK)then
-			SnapAim = true
-		end
-	end)
-	hook.Add("KeyRelease","FOVAIM_OFF",function(ply,key)
-		if(!IsValid(ply))then return end
-		if(!IsValid(ply:GetActiveWeapon())) then return end
-		if(key == IN_ATTACK)then
-			SnapAim = false
-		end
-	end)
+	ply:LagCompensation(false)
 end
 
 function SWEP:CanSecondaryAttack()
 	return false
 end
 
-function SWEP:CanPrimaryAttack()
-	return IsFirstTimePredicted()
-end
-
-if !CLIENT then return end
 
 function SWEP:Think()
 	local vel = self:GetOwner():GetVelocity():Length()/15
@@ -107,6 +88,8 @@ function SWEP:Think()
 	end
 	return
 end
+
+if !CLIENT then return end
 
 local targetbone = "ValveBiped.Bip01_Head1"
 
@@ -151,6 +134,8 @@ local function FindNearestToCrosshair()
 	end
 	return nearestEnt
 end
+
+local SnapAim = false
 
 hook.Add("CreateMove","AIMBOT",function(asd)
 	if (input.IsButtonDown(MOUSE_RIGHT))then
