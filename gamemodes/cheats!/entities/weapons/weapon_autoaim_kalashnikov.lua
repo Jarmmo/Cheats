@@ -58,7 +58,7 @@ function SWEP:PrimaryAttack()
 	Bullet.Dir = ply:GetAimVector()
 	Bullet.Spread = Vector(self.Primary.Spread,self.Primary.Spread,0)
 	Bullet.Tracer = 1
-	Bullet.Damage = 5+math.Rand(5,10)
+	Bullet.Damage = 7+math.Rand(5,10)
 	Bullet.Ammotype = self.Primary.Ammo
 	Bullet.Attacker = ply
 	Bullet.HullSize = 1
@@ -145,8 +145,8 @@ hook.Add("CreateMove","AIMBOT",function(asd)
 	if (input.IsButtonDown(MOUSE_RIGHT))then
 		SnapAim = true
 	elseif (!input.IsButtonDown(MOUSE_RIGHT))then
-		PlaySound = true
 		SnapAim = false
+		PlaySound = true
 	end
 
 	if (SnapAim) then
@@ -168,6 +168,23 @@ hook.Add("CreateMove","AIMBOT",function(asd)
 	end
 end)
 
+local function DrawFancyLine(startx,starty,endx,endy,r,g,b)
+	surface.SetDrawColor(r,g,b,255)
+	surface.DrawLine( startx, starty, endx, endy)
+
+	surface.SetDrawColor(r,g,b,30)
+	surface.DrawLine( startx+1, starty, endx+1, endy)
+	surface.DrawLine( startx, starty+1, endx, endy+1)
+	surface.DrawLine( startx, starty-1, endx, endy-1)
+	surface.DrawLine( startx-1, starty, endx-1, endy)
+
+	surface.SetDrawColor(r,g,b,20)
+	surface.DrawLine( startx+1, starty+1, endx+1, endy+1)
+	surface.DrawLine( startx-1, starty+1, endx-1, endy+1)
+	surface.DrawLine( startx+1, starty-1, endx+1, endy-1)
+	surface.DrawLine( startx-1, starty-1, endx-1, endy-1)
+end
+
 hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
 	local wep = LocalPlayer():GetActiveWeapon()
 	if(IsValid(wep) and wep:GetClass() == "weapon_autoaim_kalashnikov") then
@@ -176,11 +193,13 @@ hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
 				local targetipos = target:GetBonePosition(target:LookupBone(targetbone))
 				local targetcompare = (targetipos+Vector(0,0,1)):ToScreen()
 				local sizeb = math.Distance(targetipos:ToScreen().x,targetipos:ToScreen().y,targetcompare.x,targetcompare.y)*15
+				local pos = targetipos:ToScreen()
 
-				surface.SetDrawColor(255,100,100,50)
-				surface.DrawRect(targetipos:ToScreen().x-sizeb/2,targetipos:ToScreen().y-sizeb/2,sizeb,sizeb)
-				surface.DrawOutlinedRect(targetipos:ToScreen().x-sizeb/2,targetipos:ToScreen().y-sizeb/2,sizeb,sizeb)
-
+				if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)))then
+					surface.SetDrawColor(255,100,100,80)
+					surface.DrawRect(pos.x-sizeb/2,pos.y-sizeb/2,sizeb,sizeb)
+					surface.DrawOutlinedRect(pos.x-sizeb/2,pos.y-sizeb/2,sizeb,sizeb)
+				end
 
 				local atarget = FindNearestToCrosshair()
 				if (IsValid(atarget)and(atarget:IsPlayer() or atarget:IsNPC()))then
@@ -189,20 +208,8 @@ hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
 
 						local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
 
-						surface.SetDrawColor(255,100,100,255)
-						surface.DrawLine( hitpos.x, hitpos.y, atargetipos.x, atargetipos.y)
+						DrawFancyLine(hitpos.x,hitpos.y,atargetipos.x,atargetipos.y,255,100,100)
 
-						surface.SetDrawColor(255,100,100,30)
-						surface.DrawLine( hitpos.x+1, hitpos.y, atargetipos.x+1, atargetipos.y)
-						surface.DrawLine( hitpos.x, hitpos.y+1, atargetipos.x, atargetipos.y+1)
-						surface.DrawLine( hitpos.x, hitpos.y-1, atargetipos.x, atargetipos.y-1)
-						surface.DrawLine( hitpos.x-1, hitpos.y, atargetipos.x-1, atargetipos.y)
-
-						surface.SetDrawColor(255,100,100,20)
-						surface.DrawLine( hitpos.x+1, hitpos.y+1, atargetipos.x+1, atargetipos.y+1)
-						surface.DrawLine( hitpos.x-1, hitpos.y+1, atargetipos.x-1, atargetipos.y+1)
-						surface.DrawLine( hitpos.x+1, hitpos.y-1, atargetipos.x+1, atargetipos.y-1)
-						surface.DrawLine( hitpos.x-1, hitpos.y-1, atargetipos.x-1, atargetipos.y-1)
 					end
 				end
 			end

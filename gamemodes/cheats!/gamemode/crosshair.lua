@@ -15,10 +15,14 @@ end
 
 function F_Crosshair()
 	local wep = LocalPlayer():GetActiveWeapon()
+	local CPos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
+	if (wep.Scoped) then CPos = Vector(ScrW()/2,ScrH()/2) end
 	if (wep.DrawCustomCrosshair == true)then
-		local CPos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
 		surface.SetDrawColor( 255,100,100, 255)
 		draw.Circle(CPos.x,CPos.y,3.5,8)
+		if(wep.Scoped == true)then
+			
+		end
 	end
 end
 hook.Add("HUDPaint","Crosshairi",F_Crosshair)

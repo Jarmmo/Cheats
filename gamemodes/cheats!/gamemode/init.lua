@@ -65,6 +65,8 @@ end
 function GM:GetFallDamage(ply)
 	if(ply:GetActiveWeapon():GetClass() == "weapon_bunnyclaw")then
 		return 0
+	else 
+		return 10
 	end
 end
 
@@ -76,6 +78,8 @@ end
 
 util.AddNetworkString("ESP_POS")
 
+local last = 0
+
 function GM:Think()
 	local playertable = {}
 	local weptable = {}
@@ -84,14 +88,20 @@ function GM:Think()
 		table.insert(playertable,{v,v:LocalToWorld(v:OBBCenter())})
 	end
 	for k,v in pairs(player.GetAll())do
-		if(v:GetActiveWeapon():GetClass() == "weapon_icu")then
+		if(IsValid(v:GetActiveWeapon()) and v:GetActiveWeapon():GetClass() == "weapon_icu")then
 			table.insert(weptable,v)
 		end
 	end
 	if((table.Count(playertable) <= 0) or (table.Count(weptable) <= 0))then return end
-	net.Start("ESP_POS")
-	net.WriteTable(playertable)
-	net.Send(weptable)
+
+	local delay = 0.5
+
+	if CurTime() - last > delay then
+		net.Start("ESP_POS")
+		net.WriteTable(playertable)
+		net.Send(weptable)
+		last = CurTime()
+	end
 end
 
 RunConsoleCommand( "sv_sticktoground","0" )
