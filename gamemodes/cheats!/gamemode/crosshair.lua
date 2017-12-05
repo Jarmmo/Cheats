@@ -21,7 +21,9 @@ function F_Crosshair()
 		surface.SetDrawColor( 255,100,100, 255)
 		draw.Circle(CPos.x,CPos.y,3.5,8)
 		if(wep.Scoped == true)then
-			
+			local vel = LocalPlayer():GetVelocity():Length()/7
+			surface.SetDrawColor( 255,100,100, 50)
+			surface.DrawCircle(CPos.x,CPos.y,math.Clamp((vel)-5,0,9999),255,100,100,255)
 		end
 	end
 end

@@ -7,13 +7,13 @@ SWEP.ViewModel = "models/weapons/v_snip_awp.mdl"
 SWEP.WorldModel = "models/weapons/w_snip_awp.mdl"
 SWEP.UseHands = true
 SWEP.SetHoldType = "ar2"
-SWEP.Weight = 0
+SWEP.Weight = 1
 SWEP.DrawAmmo = true
 SWEP.DrawCrosshair = false
 SWEP.DrawCustomCrosshair = true
 SWEP.DrawHud = false
 SWEP.ViewModelFlip = true
-SWEP.Slot = 2
+SWEP.Slot = 1
 SWEP.SlotPos = 1
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
@@ -23,7 +23,7 @@ SWEP.Scoped = false
 SWEP.CanScope = true
 SWEP.Sens = 1
 
-SWEP.Primary.ClipSize = 12
+SWEP.Primary.ClipSize = 7
 SWEP.Primary.DefaultClip = 10
 SWEP.Primary.Ammo = "SMG1"
 SWEP.Primary.Automatic = true
@@ -65,7 +65,7 @@ function SWEP:PrimaryAttack()
 		Dir = ply:GetAimVector(),
 		Spread = Vector(self.Primary.Spread,self.Primary.Spread,0),
 		Tracer = 1,
-		Damage = 50,
+		Damage = 100,
 		AmmoType = self.Primary.Ammo,
 		Attacker = ply,
 		HullSize = 0,
@@ -78,7 +78,7 @@ function SWEP:PrimaryAttack()
 	self:EmitSound(shoot)
 	self.BaseClass.ShootEffects(self)
 	self:TakePrimaryAmmo(1)
-	self:SetNextPrimaryFire(CurTime()+1.2)
+	self:SetNextPrimaryFire(CurTime()+1.5)
 	ply:ViewPunch(Angle(-1,math.Rand(-0.5,0.5),0))
 
 	ply:LagCompensation(false)
@@ -91,14 +91,12 @@ end
 
 function SWEP:SecondaryAttack()
 	if (!self.Scoped and self.CanScope)then
-		--self:SetNextSecondaryFire(0.5)
 		self.Scoped = true
 		self.CanScope = false
 		timer.Simple(0.5,function()
 			self.CanScope = true
 		end)
 	elseif(self.Scoped and self.CanScope)then
-		--self:SetNextSecondaryFire(0.5)
 		self.Scoped = false
 		self.CanScope = false
 		timer.Simple(0.5,function()
@@ -120,7 +118,7 @@ function SWEP:Think()
 	if(self.Scoped)then
 		self.Primary.Spread = math.Clamp((vel/200)-0.005,0,9999)
 
-		self.Owner:SetFOV( 25, 0 )
+		self.Owner:SetFOV( 20, 0 )
 		self.Sens = 0.2
 	elseif(!self.Scoped)then
 		self.Primary.Spread = (vel/50)+0.5
@@ -197,7 +195,7 @@ function SWEP:DrawHUD()
 	end
 
 	for k,v in pairs(playerpos) do
-		if ((v[1] != LocalPlayer()) and (v[1]:IsDormant())) then --dormant
+		if (IsValid(v[1]) and (v[1] != LocalPlayer()) and (v[1]:IsDormant())) then --dormant
 			local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
 			local pos = v[2]:ToScreen()
 			if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)) and !self.Scoped)then
@@ -211,17 +209,28 @@ function SWEP:DrawHUD()
 				surface.SetFont("ESPFont1")
 				surface.SetTextColor(255,100,100,255)
 				surface.SetTextPos(pos.x-size/2,pos.y+size)
-				surface.DrawText(v[1]:GetName())
+				local txt = ""
+				if(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_bunnyclaw")then
+					txt = "Bunny's Claw"
+				elseif(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_icu")then
+					txt = "ICU-2000"
+				elseif(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_autoaim_kalashnikov")then
+					txt = "Autoaim Kalashnikov-47"
+				elseif(IsValid(v[1]:GetActiveWeapon()))then
+					txt = v[1]:GetActiveWeapon():GetClass()
+				end
+				surface.DrawText(v[1]:Health().."/100")
 				surface.SetFont("ESPFont2")
 				surface.SetTextPos(pos.x-size/2,pos.y+size+15)
-				surface.DrawText(v[1]:Health().."/100")
+
+				surface.DrawText(txt)
 
 				surface.SetDrawColor( 255,100,100, 10)
 				surface.DrawRect(pos.x-size/2,pos.y-size,size,size*2)
 				surface.SetDrawColor( 255,100,100, 255)
 				surface.DrawOutlinedRect(pos.x-size/2,pos.y-size,size,size*2)
 			end
-		elseif((v[1] != LocalPlayer()) and not (v[1]:IsDormant()))then --not
+		elseif(IsValid(v[1]) and (v[1] != LocalPlayer()) and not (v[1]:IsDormant()))then --not
 			local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
 			local pos = v[1]:LocalToWorld(v[1]:OBBCenter()):ToScreen()
 			if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)) and !self.Scoped)then
@@ -234,10 +243,21 @@ function SWEP:DrawHUD()
 				surface.SetFont("ESPFont1")
 				surface.SetTextColor(255,100,100,255)
 				surface.SetTextPos(pos.x-size/2,pos.y+size)
-				surface.DrawText(v[1]:GetName())
+				local txt = ""
+				if(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_bunnyclaw")then
+					txt = "Bunny's Claw"
+				elseif(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_icu")then
+					txt = "ICU-2000"
+				elseif(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_autoaim_kalashnikov")then
+					txt = "Autoaim Kalashnikov-47"
+				elseif(IsValid(v[1]:GetActiveWeapon()))then
+					txt = v[1]:GetActiveWeapon():GetClass()
+				end
+				surface.DrawText(v[1]:Health().."/100")
 				surface.SetFont("ESPFont2")
 				surface.SetTextPos(pos.x-size/2,pos.y+size+15)
-				surface.DrawText(v[1]:Health().."/100")
+
+				surface.DrawText(txt)
 
 				surface.SetDrawColor( 255,100,100, 10)
 				surface.DrawRect(pos.x-size/2,pos.y-size,size,size*2)

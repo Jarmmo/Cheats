@@ -7,12 +7,12 @@ SWEP.ViewModel = "models/weapons/v_rif_ak47.mdl"
 SWEP.WorldModel = "models/weapons/w_rif_ak47.mdl"
 SWEP.UseHands = true
 SWEP.SetHoldType = "ar2"
-SWEP.Weight = 1
+SWEP.Weight = 2
 SWEP.DrawAmmo = true
 SWEP.DrawCrosshair = false
 SWEP.DrawCustomCrosshair = true
 SWEP.ViewModelFlip = true
-SWEP.Slot = 1
+SWEP.Slot = 0
 SWEP.SlotPos = 1
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
@@ -69,7 +69,7 @@ function SWEP:PrimaryAttack()
 	self:EmitSound(shoot)
 	self.BaseClass.ShootEffects(self)
 	self:TakePrimaryAmmo(1)
-	self:SetNextPrimaryFire(CurTime()+0.1)
+	self:SetNextPrimaryFire(CurTime()+0.12)
 	ply:ViewPunch(Angle(-0.5,math.Rand(-0.5,0.5),0))
 
 	ply:LagCompensation(false)
