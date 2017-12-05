@@ -10,6 +10,7 @@ SWEP.SetHoldType = "ar2"
 SWEP.Weight = 1
 SWEP.DrawAmmo = true
 SWEP.DrawCrosshair = false
+SWEP.DrawCustomCrosshair = true
 SWEP.ViewModelFlip = true
 SWEP.Slot = 1
 SWEP.SlotPos = 1
@@ -57,7 +58,7 @@ function SWEP:PrimaryAttack()
 	Bullet.Dir = ply:GetAimVector()
 	Bullet.Spread = Vector(self.Primary.Spread,self.Primary.Spread,0)
 	Bullet.Tracer = 1
-	Bullet.Damage = 10+math.Rand(5,10)
+	Bullet.Damage = 5+math.Rand(5,10)
 	Bullet.Ammotype = self.Primary.Ammo
 	Bullet.Attacker = ply
 	Bullet.HullSize = 1
@@ -82,9 +83,9 @@ end
 function SWEP:Think()
 	local vel = self:GetOwner():GetVelocity():Length()/15
 	if(self:GetOwner():Crouching())then
-		self.Primary.Spread = (vel/500)+0.02
+		self.Primary.Spread = (vel/250)+0.02
 	else
-		self.Primary.Spread = (vel/50)+0.025
+		self.Primary.Spread = (vel/25)+0.025
 	end
 	return
 end
@@ -111,8 +112,10 @@ end
 local function CheckFOV(target,PixelDifference)
 	local W,H = ScrW()/2,ScrH()/2
 	local ScreenPos = target:GetBonePosition(target:LookupBone(targetbone)):ToScreen()
+	local ScreenCompare = (target:GetBonePosition(target:LookupBone(targetbone))+Vector(0,0,1)):ToScreen()
 	local Dist = Vector(W,H,0):Distance(Vector(ScreenPos.x,ScreenPos.y,0))
-	if Dist < PixelDifference then 
+	local pd = (math.Distance(ScreenPos.x,ScreenPos.y,ScreenCompare.x,ScreenCompare.y)*PixelDifference)/2
+	if Dist < pd then 
 		return true
 	end
 	return false
@@ -136,11 +139,13 @@ local function FindNearestToCrosshair()
 end
 
 local SnapAim = false
+local PlaySound = true
 
 hook.Add("CreateMove","AIMBOT",function(asd)
 	if (input.IsButtonDown(MOUSE_RIGHT))then
 		SnapAim = true
 	elseif (!input.IsButtonDown(MOUSE_RIGHT))then
+		PlaySound = true
 		SnapAim = false
 	end
 
@@ -152,6 +157,10 @@ hook.Add("CreateMove","AIMBOT",function(asd)
 			local target = FindNearestToCrosshair()
 
 			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or (target:IsNPC() and target:Health() >= 0)) and (CheckFOV(target,200) and CheckLOS(target))) then
+				if (PlaySound) then
+					surface.PlaySound("ui/buttonclick.wav")
+					PlaySound = false
+				end
 				local targetbonepos = target:GetBonePosition(target:LookupBone(targetbone))
 				asd:SetViewAngles((targetbonepos - ply:EyePos()):Angle())
 			end
@@ -168,7 +177,7 @@ hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
 				local targetcompare = (targetipos+Vector(0,0,1)):ToScreen()
 				local sizeb = math.Distance(targetipos:ToScreen().x,targetipos:ToScreen().y,targetcompare.x,targetcompare.y)*15
 
-				surface.SetDrawColor(255,100,100,100)
+				surface.SetDrawColor(255,100,100,50)
 				surface.DrawRect(targetipos:ToScreen().x-sizeb/2,targetipos:ToScreen().y-sizeb/2,sizeb,sizeb)
 				surface.DrawOutlinedRect(targetipos:ToScreen().x-sizeb/2,targetipos:ToScreen().y-sizeb/2,sizeb,sizeb)
 

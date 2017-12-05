@@ -35,7 +35,7 @@ end
 function GM:PlayerLoadout(ply)
 	ply:Give("weapon_bunnyclaw")
 	ply:Give("weapon_autoaim_kalashnikov")
-	ply:Give("weapon_awp")
+	ply:Give("weapon_icu")
 	return true
 end
 
@@ -72,6 +72,26 @@ function GM:InitPostEntity( ent )
 	for k,v in pairs(ents.GetAll())do
 		v:AddEFlags( EFL_IN_SKYBOX )
 	end
+end
+
+util.AddNetworkString("ESP_POS")
+
+function GM:Think()
+	local playertable = {}
+	local weptable = {}
+	if(table.Count(player.GetAll()) <= 0)then return end
+	for k,v in pairs(player.GetAll())do
+		table.insert(playertable,{v,v:LocalToWorld(v:OBBCenter())})
+	end
+	for k,v in pairs(player.GetAll())do
+		if(v:GetActiveWeapon():GetClass() == "weapon_icu")then
+			table.insert(weptable,v)
+		end
+	end
+	if((table.Count(playertable) <= 0) or (table.Count(weptable) <= 0))then return end
+	net.Start("ESP_POS")
+	net.WriteTable(playertable)
+	net.Send(weptable)
 end
 
 RunConsoleCommand( "sv_sticktoground","0" )

@@ -10,6 +10,7 @@ SWEP.SetHoldType = "knife"
 SWEP.Weight = 2
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
+SWEP.DrawCustomCrosshair = false
 SWEP.Slot = 0
 SWEP.SlotPos = 1
 SWEP.Spawnable = false
