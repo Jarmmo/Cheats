@@ -36,9 +36,9 @@ function GM:PlayerSpawn( ply )
 end
 
 function GM:PlayerLoadout(ply)
-	ply:Give("weapon_bunnyclaw")
 	ply:Give("weapon_autoaim_kalashnikov")
 	ply:Give("weapon_icu")
+	ply:Give("weapon_bunnyclaw")
 	return true
 end
 
