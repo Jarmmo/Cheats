@@ -93,6 +93,7 @@ function SWEP:AdjustMouseSensitivity()
 end
 
 function SWEP:SecondaryAttack()
+	if(!self.DrawHud)then return end
 	if (!self.Scoped and self.CanScope)then
 		self.Scoped = true
 		self.CanScope = false
