@@ -16,7 +16,7 @@ SWEP.Slot = 0
 SWEP.SlotPos = 1
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
-SWEP.m_WeaponDeploySpeed = 1
+SWEP.m_WeaponDeploySpeed = 5
 SWEP.CSMuzzleFlashes = true
 
 SWEP.Primary.ClipSize = 30

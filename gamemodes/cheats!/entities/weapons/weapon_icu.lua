@@ -17,7 +17,7 @@ SWEP.Slot = 1
 SWEP.SlotPos = 1
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
-SWEP.m_WeaponDeploySpeed = 1
+SWEP.m_WeaponDeploySpeed = 5
 SWEP.CSMuzzleFlashes = true
 SWEP.Scoped = false
 SWEP.CanScope = true
@@ -46,6 +46,9 @@ function SWEP:Deploy()
 	if (SERVER) then
 		self:GetOwner():EmitSound("npc/sniper/reload1.wav")
 	end
+	timer.Create("DRAWHUD",1.25,1,function()
+		self.DrawHud = true
+	end)
 	self.Sens = 1
 	self.Scoped = false
 	self.CanScope = true
@@ -113,7 +116,6 @@ function SWEP:Reload()
 end
 
 function SWEP:Think()
-	self.DrawHud = true
 	local vel = self:GetOwner():GetVelocity():Length()/15
 	if(self.Scoped)then
 		self.Primary.Spread = math.Clamp((vel/200)-0.005,0,9999)
