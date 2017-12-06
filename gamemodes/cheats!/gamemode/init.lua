@@ -1,7 +1,10 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("crosshair.lua")
+AddCSLuaFile("quickswitch.lua")
+AddCSLuaFile("util/votemap.lua")
 
+include ("util/votemap.lua")
 include("shared.lua")
 
 
