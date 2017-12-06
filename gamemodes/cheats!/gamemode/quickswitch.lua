@@ -27,13 +27,13 @@ hook.Add("PlayerBindPress", "QuickSwitch", function(ply, bind, pressed)
 		input.SelectWeapon(weps[3])
 	end
 
-	if(bind == "invprev")then
+	if(bind == "invnext")then
 		if(wep:GetSlot() == table.Count(weps)-1)then
 			input.SelectWeapon(weps[1])
 		else
 			input.SelectWeapon(weps[wep:GetSlot()+2])
 		end
-	elseif(bind == "invnext")then
+	elseif(bind == "invprev")then
 		if(wep:GetSlot() == 0)then
 			input.SelectWeapon(weps[table.Count(weps)])
 		else
