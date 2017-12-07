@@ -28,12 +28,20 @@ local PlayerModels = {
 }
 
 function GM:PlayerSpawn( ply )
-	ply:SetModel(table.Random(PlayerModels))
-	ply:SetPlayerColor(Vector(200,100,100))	
+	if(ply:Team() != 0)then
+		ply:SetTeam(math.random(1, 2))
+		ply:GiveAmmo(99999999, "SMG1", true)
+		hook.Call( "PlayerLoadout", GAMEMODE, ply )
+	elseif(ply:Team() == 0)then
+		ply:GodEnable()
+	end
+	local col = team.GetColor(ply:Team())
+	timer.Simple(0,function()
+		ply:SetModel(table.Random(PlayerModels))
+		ply:SetPlayerColor(Vector(col.r/255,col.g/255,col.b/255))
+	end)
 	ply:SetJumpPower(300)
-	ply:GiveAmmo(99999999, "SMG1", true)
 	ply:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
-	hook.Call( "PlayerLoadout", GAMEMODE, ply )
 end
 
 function GM:PlayerLoadout(ply)
@@ -44,7 +52,8 @@ function GM:PlayerLoadout(ply)
 end
 
 function GM:PlayerInitialSpawn( ply )
-	ply:SetTeam( 1 )
+	ply:SetTeam(0)
+	ply:SetModel(table.Random(PlayerModels))
 end
 
 function GM:CanPlayerSuicide(ply)
