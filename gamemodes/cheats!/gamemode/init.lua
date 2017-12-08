@@ -1,12 +1,12 @@
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
-AddCSLuaFile("crosshair.lua")
-AddCSLuaFile("quickswitch.lua")
-AddCSLuaFile("util/votemap.lua")
+AddCSLuaFile("misc/crosshair.lua")
+AddCSLuaFile("misc/quickswitch.lua")
+AddCSLuaFile("misc/votemap.lua")
 
-include("util/votemap.lua")
+include("misc/votemap.lua")
 include("shared.lua")
-include("rounds.lua")
+include("misc/rounds.lua")
 
 
 local PlayerModels = {
@@ -82,12 +82,6 @@ function GM:GetFallDamage(ply)
 		return 0
 	else 
 		return 10
-	end
-end
-
-function GM:InitPostEntity( ent )
-	for k,v in pairs(ents.GetAll())do
-		v:AddEFlags( EFL_IN_SKYBOX )
 	end
 end
 
