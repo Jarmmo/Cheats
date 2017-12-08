@@ -34,6 +34,7 @@ end
 function RoundWin()
 	RoundCount = 0
 	RoundMsg("Someone won the game!")
+	SetGlobalBool("Deathmatch",true)
 end
 
 --add game cancel function, game setup, clientside

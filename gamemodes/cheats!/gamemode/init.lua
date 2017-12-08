@@ -4,10 +4,13 @@ AddCSLuaFile("misc/crosshair.lua")
 AddCSLuaFile("misc/quickswitch.lua")
 AddCSLuaFile("misc/votemap.lua")
 
+include("misc/chatcommands.lua")
 include("misc/votemap.lua")
 include("shared.lua")
 include("misc/rounds.lua")
 
+SetGlobalBool("Deathmatch",true)
+SetGlobalInt("Voteamount",0)
 
 local PlayerModels = {
 	"models/player/group01/female_01.mdl",
@@ -113,31 +116,15 @@ function GM:Think()
 	end
 end
 
-hook.Add("PlayerSay","chatcommands",function(ply,text)
-	if(string.StartWith(text,"!team"))then
-		local teams = team.GetAllTeams()
-		tc1 = table.Count(team.GetPlayers(1))
-		tc2 = table.Count(team.GetPlayers(2))
-		if(ply:Team() == 1)then
-			tc1 = tc1-1
-		elseif(ply:Team() == 2)then
-			tc2 = tc2-1
+hook.Add("PlayerDisconnected","VoteCheck",function()
+	print((table.Count(player.GetAll())-1))
+	if(100*GetGlobalInt("Voteamount")/(table.Count(player.GetAll())-1) > 75)then
+		RoundStart()
+		SetGlobalBool("Deathmatch",false)
+		SetGlobalInt("Voteamount",0)
+		for k,v in pairs(player.GetAll())do
+			v:SetNWBool("Voted",false)
 		end
-		if(tc1>tc2 and ply:Team() != 2)then
-			ply:SetTeam(2)
-			ply:Kill()
-			ply:ChatPrint("Set team to Blue")
-		elseif(tc1<tc2 and ply:Team() != 1)then
-			ply:SetTeam(1)
-			ply:Kill()
-			ply:ChatPrint("Set team to Red")
-		elseif(tc1==tc2)then
-			local teamr = math.random(1, 2)
-			ply:SetTeam(teamr)
-			ply:ChatPrint("Set team to ".. team.GetName(teamr))
-			ply:Kill()
-		end
-		return ""
 	end
 end)
 
