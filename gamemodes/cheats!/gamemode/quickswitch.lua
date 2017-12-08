@@ -16,6 +16,7 @@ hook.Add("PlayerBindPress", "QuickSwitch", function(ply, bind, pressed)
 
 	local weps = LocalPlayer():GetWeapons()
 	local wep = LocalPlayer():GetActiveWeapon()
+	if(!IsValid(wep))then return end
 
 	table.sort(weps, function(a, b) return a:GetSlot() < b:GetSlot() end)
 

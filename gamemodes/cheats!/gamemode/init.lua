@@ -29,10 +29,12 @@ local PlayerModels = {
 
 function GM:PlayerSpawn( ply )
 	if(ply:Team() != 0)then
-		ply:SetTeam(math.random(1, 2))
+		ply:UnSpectate()
+		--ply:SetTeam(math.random(1, 2))
 		ply:GiveAmmo(99999999, "SMG1", true)
 		hook.Call( "PlayerLoadout", GAMEMODE, ply )
 	elseif(ply:Team() == 0)then
+		ply:Spectate(OBS_MODE_ROAMING)
 		ply:GodEnable()
 	end
 	local col = team.GetColor(ply:Team())
@@ -57,7 +59,7 @@ function GM:PlayerInitialSpawn( ply )
 end
 
 function GM:CanPlayerSuicide(ply)
-	if(ply:Alive())then
+	if(ply:Alive() and ply:Team() != 0)then
 		ply:Kill()
 	end
 end
@@ -116,6 +118,34 @@ function GM:Think()
 		last = CurTime()
 	end
 end
+
+hook.Add("PlayerSay","chatcommands",function(ply,text)
+	if(string.StartWith(text,"!team"))then
+		local teams = team.GetAllTeams()
+		tc1 = table.Count(team.GetPlayers(1))
+		tc2 = table.Count(team.GetPlayers(2))
+		if(ply:Team() == 1)then
+			tc1 = tc1-1
+		elseif(ply:Team() == 2)then
+			tc2 = tc2-1
+		end
+		if(tc1>tc2 and ply:Team() != 2)then
+			ply:SetTeam(2)
+			ply:Kill()
+			ply:ChatPrint("Set team to Blue")
+		elseif(tc1<tc2 and ply:Team() != 1)then
+			ply:SetTeam(1)
+			ply:Kill()
+			ply:ChatPrint("Set team to Red")
+		elseif(tc1==tc2)then
+			local teamr = math.random(1, 2)
+			ply:SetTeam(teamr)
+			ply:ChatPrint("Set team to ".. team.GetName(teamr))
+			ply:Kill()
+		end
+		return ""
+	end
+end)
 
 RunConsoleCommand( "sv_sticktoground","0" )
 RunConsoleCommand( "sv_airaccelerate","1000" )

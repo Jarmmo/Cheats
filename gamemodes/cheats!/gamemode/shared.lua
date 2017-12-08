@@ -4,3 +4,4 @@ GM.Author 	= "Jarmmo"
 team.SetUp(0,"Waiting",Color(100,100,100),false)
 team.SetUp(1,"Red",Color(200,100,100),false)
 team.SetUp(2,"Blue",Color(100,100,200),false)
+team.SetUp(3,"Deathmatch",Color(100,255,255),false)
