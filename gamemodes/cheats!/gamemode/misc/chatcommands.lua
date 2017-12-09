@@ -13,23 +13,24 @@ hook.Add("PlayerSay","chatcommands",function(ply,text)
 			tc2 = tc2-1
 		end
 		if(GetGlobalBool("Deathmatch"))then
+			if(ply:Team() == 3)then return "" end
 			ply:SetTeam(3)
-			ply:Kill()
+			ply:Spawn()
 			ply:ChatPrint("Set team to Deathmatch")
 		else
 			if(tc1>tc2 and ply:Team() != 2)then
 				ply:SetTeam(2)
-				ply:Kill()
+				ply:KillSilent()
 				ply:ChatPrint("Set team to Blue")
 			elseif(tc1<tc2 and ply:Team() != 1)then
 				ply:SetTeam(1)
-				ply:Kill()
+				ply:Spawn()
 				ply:ChatPrint("Set team to Red")
 			elseif(tc1==tc2)then
 				local teamr = math.random(1, 2)
 				ply:SetTeam(teamr)
 				ply:ChatPrint("Set team to ".. team.GetName(teamr))
-				ply:Kill()
+				ply:Spawn()
 			end
 		end
 		return ""
@@ -40,8 +41,7 @@ hook.Add("PlayerSay","chatcommands",function(ply,text)
 			ply:SetNWBool("Voted",true)
 			SetGlobalInt("Voteamount",GetGlobalInt("Voteamount")+1)
 			if((100*GetGlobalInt("Voteamount")/table.Count(player.GetAll())) > 75)then
-				RoundStart()
-				SetGlobalBool("Deathmatch",false)
+				RoundLobby()
 				SetGlobalInt("Voteamount",0)
 				for k,v in pairs(player.GetAll())do
 					v:SetNWBool("Voted",false)

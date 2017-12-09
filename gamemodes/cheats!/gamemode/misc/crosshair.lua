@@ -18,12 +18,13 @@ function F_Crosshair()
 	local CPos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
 	if (wep.Scoped) then CPos = Vector(ScrW()/2,ScrH()/2) end
 	if (wep.DrawCustomCrosshair == true)then
-		surface.SetDrawColor( 255,100,100, 255)
+		local col = team.GetColor(LocalPlayer():Team())
+		surface.SetDrawColor(col.r,col.g,col.b,255)
 		draw.Circle(CPos.x,CPos.y,3.5,8)
 		if(wep.Scoped == true)then
 			local vel = LocalPlayer():GetVelocity():Length()/7
-			surface.SetDrawColor( 255,100,100, 50)
-			surface.DrawCircle(CPos.x,CPos.y,math.Clamp((vel)-5,0,9999),255,100,100,255)
+			surface.SetDrawColor(col.r,col.g,col.b,50)
+			surface.DrawCircle(CPos.x,CPos.y,math.Clamp((vel)-5,0,9999),col.r,col.g,col.b,255)
 		end
 	end
 end

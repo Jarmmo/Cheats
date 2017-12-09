@@ -8,6 +8,8 @@ include("misc/chatcommands.lua")
 include("misc/votemap.lua")
 include("shared.lua")
 include("misc/rounds.lua")
+include("misc/teamfuncs.lua")
+
 
 SetGlobalBool("Deathmatch",true)
 SetGlobalInt("Voteamount",0)
@@ -62,22 +64,15 @@ function GM:PlayerInitialSpawn( ply )
 end
 
 function GM:CanPlayerSuicide(ply)
-	if(ply:Alive() and ply:Team() != 0)then
-		ply:Kill()
+	if(ply:Alive() and ply:Team() != 0 and GetGlobalBool("Deathmatch"))then
+		ply:KillSilent()
 	end
 end
 
 function GM:KeyPress(ply)
-	if(!ply:Alive())then
+	if(!ply:Alive() and GetGlobalBool("Deathmatch"))then
 		ply:Spawn()
 	end
-end
-
-function GM:PostPlayerDeath(ply)
-	timer.Simple(0,function()
-		ply:Spawn()
-		ply:SetPlayerColor(Vector(255,0,0))
-	end)
 end
 
 function GM:GetFallDamage(ply)

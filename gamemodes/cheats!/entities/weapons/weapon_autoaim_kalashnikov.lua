@@ -126,12 +126,14 @@ local function FindNearestToCrosshair()
 	local LowestDist = 999
 	local W,H = ScrW()/2,ScrH()/2
 	for k,v in pairs(ents.GetAll())do
-		if ((v:IsPlayer() and v:Alive() and v != LocalPlayer()) or v:IsNPC())then
-			local ScreenPos = v:GetBonePosition(v:LookupBone(targetbone)):ToScreen()
-			local Dist = Vector(W,H,0):Distance(Vector(ScreenPos.x,ScreenPos.y,0))
-			if (Dist < LowestDist) then
-				LowestDist = Dist
-				nearestEnt = v
+		if ((v:IsPlayer() and v:Alive() and v != LocalPlayer()) or v:IsNPC() and CheckLOS(target))then
+			if(v:Team() == 3 or (v:Team() != LocalPlayer():Team()))then
+				local ScreenPos = v:GetBonePosition(v:LookupBone(targetbone)):ToScreen()
+				local Dist = Vector(W,H,0):Distance(Vector(ScreenPos.x,ScreenPos.y,0))
+				if (Dist < LowestDist) then
+					LowestDist = Dist
+					nearestEnt = v
+				end
 			end
 		end
 	end
@@ -169,36 +171,39 @@ hook.Add("CreateMove","AIMBOT",function(asd)
 end)
 
 local function DrawFancyLine(startx,starty,endx,endy,r,g,b)
-	surface.SetDrawColor(r,g,b,255)
-	surface.DrawLine( startx, starty, endx, endy)
+surface.SetDrawColor(r,g,b,255)
+surface.DrawLine( startx, starty, endx, endy)
 
-	surface.SetDrawColor(r,g,b,30)
-	surface.DrawLine( startx+1, starty, endx+1, endy)
-	surface.DrawLine( startx, starty+1, endx, endy+1)
-	surface.DrawLine( startx, starty-1, endx, endy-1)
-	surface.DrawLine( startx-1, starty, endx-1, endy)
+surface.SetDrawColor(r,g,b,30)
+surface.DrawLine( startx+1, starty, endx+1, endy)
+surface.DrawLine( startx, starty+1, endx, endy+1)
+surface.DrawLine( startx, starty-1, endx, endy-1)
+surface.DrawLine( startx-1, starty, endx-1, endy)
 
-	surface.SetDrawColor(r,g,b,20)
-	surface.DrawLine( startx+1, starty+1, endx+1, endy+1)
-	surface.DrawLine( startx-1, starty+1, endx-1, endy+1)
-	surface.DrawLine( startx+1, starty-1, endx+1, endy-1)
-	surface.DrawLine( startx-1, starty-1, endx-1, endy-1)
+surface.SetDrawColor(r,g,b,20)
+surface.DrawLine( startx+1, starty+1, endx+1, endy+1)
+surface.DrawLine( startx-1, starty+1, endx-1, endy+1)
+surface.DrawLine( startx+1, starty-1, endx+1, endy-1)
+surface.DrawLine( startx-1, starty-1, endx-1, endy-1)
 end
 
 hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
+	local col = team.GetColor(LocalPlayer():Team())
 	local wep = LocalPlayer():GetActiveWeapon()
 	if(IsValid(wep) and wep:GetClass() == "weapon_autoaim_kalashnikov") then
 		for k,target in pairs(ents.GetAll())do
 			if (IsValid(target)and(target:IsPlayer() or (target:IsNPC() and target:Health() >= 0)) and target != LocalPlayer() and CheckLOS(target)) then
-				local targetipos = target:GetBonePosition(target:LookupBone(targetbone))
-				local targetcompare = (targetipos+Vector(0,0,1)):ToScreen()
-				local sizeb = math.Distance(targetipos:ToScreen().x,targetipos:ToScreen().y,targetcompare.x,targetcompare.y)*15
-				local pos = targetipos:ToScreen()
+				if(target:Team() == 3 or (target:Team() != LocalPlayer():Team()))then
+					local targetipos = target:GetBonePosition(target:LookupBone(targetbone))
+					local targetcompare = (targetipos+Vector(0,0,1)):ToScreen()
+					local sizeb = math.Distance(targetipos:ToScreen().x,targetipos:ToScreen().y,targetcompare.x,targetcompare.y)*15
+					local pos = targetipos:ToScreen()
 
-				if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)))then
-					surface.SetDrawColor(255,100,100,80)
-					surface.DrawRect(pos.x-sizeb/2,pos.y-sizeb/2,sizeb,sizeb)
-					surface.DrawOutlinedRect(pos.x-sizeb/2,pos.y-sizeb/2,sizeb,sizeb)
+					if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)))then
+						surface.SetDrawColor(col.r,col.g,col.b,80)
+						surface.DrawRect(pos.x-sizeb/2,pos.y-sizeb/2,sizeb,sizeb)
+						surface.DrawOutlinedRect(pos.x-sizeb/2,pos.y-sizeb/2,sizeb,sizeb)
+					end
 				end
 
 				local atarget = FindNearestToCrosshair()
@@ -208,7 +213,7 @@ hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
 
 						local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
 
-						DrawFancyLine(hitpos.x,hitpos.y,atargetipos.x,atargetipos.y,255,100,100)
+						DrawFancyLine(hitpos.x,hitpos.y,atargetipos.x,atargetipos.y,col.r,col.g,col.b)
 
 					end
 				end
