@@ -1,5 +1,3 @@
-AddCSLuaFile()
-
 GM.Name 	= "Cheats!"
 GM.Author 	= "Jarmmo"
 GM.TeamBased = true

@@ -8,7 +8,7 @@ SWEP.WorldModel = "models/weapons/w_snip_awp.mdl"
 SWEP.UseHands = true
 SWEP.SetHoldType = "ar2"
 SWEP.Weight = 1
-SWEP.DrawAmmo = true
+SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 SWEP.DrawCustomCrosshair = true
 SWEP.DrawHud = false
@@ -67,7 +67,7 @@ function SWEP:PrimaryAttack()
 		Src = ply:GetShootPos(),
 		Dir = ply:GetAimVector(),
 		Spread = Vector(self.Primary.Spread,self.Primary.Spread,0),
-		Tracer = 1,
+		Tracer = 0,
 		Damage = 100,
 		AmmoType = self.Primary.Ammo,
 		Attacker = ply,
@@ -83,6 +83,8 @@ function SWEP:PrimaryAttack()
 	self:TakePrimaryAmmo(1)
 	self:SetNextPrimaryFire(CurTime()+1.5)
 	ply:ViewPunch(Angle(-1,math.Rand(-0.5,0.5),0))
+
+	ply:SetAmmo(999,"SMG1")
 
 	ply:LagCompensation(false)
 
@@ -108,7 +110,7 @@ function SWEP:SecondaryAttack()
 		end)
 	end
 end
-
+	
 function SWEP:Reload()
 	self.Weapon:DefaultReload( ACT_VM_RELOAD );
 	self.Scoped = false
@@ -124,7 +126,7 @@ function SWEP:Think()
 		self.Owner:SetFOV( 20, 0 )
 		self.Sens = 0.2
 	elseif(!self.Scoped)then
-		self.Primary.Spread = (vel/50)+0.5
+		self.Primary.Spread = (vel/5)
 
 		self.Owner:SetFOV( 0, 0 )
 		self.Sens = 1
@@ -200,54 +202,29 @@ function SWEP:DrawHUD()
 
 	for k,v in pairs(playerpos) do
 		local col = team.GetColor(LocalPlayer():Team())
-		if (IsValid(v[1]) and (v[1] != LocalPlayer()) and (v[1]:IsDormant())) then --dormant
+
+		local pos
+		local compare
+
+		if(v[1]:IsDormant())then
+			pos = v[2]:ToScreen()
+			compare = (v[2]+Vector(0,0,1)):ToScreen()
+		else
+			pos = v[1]:LocalToWorld(v[1]:OBBCenter()):ToScreen()
+			compare = (v[1]:LocalToWorld(v[1]:OBBCenter())+Vector(0,0,1)):ToScreen()
+		end
+
+		if (IsValid(v[1]) and (v[1] != LocalPlayer())) then
 			if(v[1]:Team() == 3 or (v[1]:Team() != LocalPlayer():Team()))then
 				local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
-				local pos = v[2]:ToScreen()
+				
 				if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)) and !self.Scoped)then
 					DrawFancyLine(hitpos.x,hitpos.y,pos.x,pos.y,col.r,col.g,col.b)
 				end
-				local compare = (v[2]+Vector(0,0,1)):ToScreen()
 				local size = math.Distance(pos.x,pos.y,compare.x,compare.y)*40
 
 				if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)))then
 
-					surface.SetFont("ESPFont1")
-					surface.SetTextColor(col.r,col.g,col.b,255)
-					surface.SetTextPos(pos.x-size/2,pos.y+size)
-					local txt = ""
-					if(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_bunnyclaw")then
-						txt = "Bunny's Claw"
-					elseif(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_icu")then
-						txt = "ICU-2000"
-					elseif(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_autoaim_kalashnikov")then
-						txt = "Autoaim Kalashnikov-47"
-					elseif(IsValid(v[1]:GetActiveWeapon()))then
-						txt = v[1]:GetActiveWeapon():GetClass()
-					end
-					surface.DrawText(v[1]:Health().."/100")
-					surface.SetFont("ESPFont2")
-					surface.SetTextPos(pos.x-size/2,pos.y+size+15)
-
-					surface.DrawText(txt)
-
-					surface.SetDrawColor(col.r,col.g,col.b,10)
-					surface.DrawRect(pos.x-size/2,pos.y-size,size,size*2)
-					surface.SetDrawColor(col.r,col.g,col.b,255)
-					surface.DrawOutlinedRect(pos.x-size/2,pos.y-size,size,size*2)
-				end
-			end
-		elseif(IsValid(v[1]) and (v[1] != LocalPlayer()) and not (v[1]:IsDormant()))then --not
-			if(v[1]:Team() == 3 or (v[1]:Team() != LocalPlayer():Team()))then
-				local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
-				local pos = v[1]:LocalToWorld(v[1]:OBBCenter()):ToScreen()
-				if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)) and !self.Scoped)then
-					DrawFancyLine(hitpos.x,hitpos.y,pos.x,pos.y,col.r,col.g,col.b)
-				end
-				local compare = (v[1]:LocalToWorld(v[1]:OBBCenter())+Vector(0,0,1)):ToScreen()
-				local size = math.Distance(pos.x,pos.y,compare.x,compare.y)*40
-
-				if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)))then
 					surface.SetFont("ESPFont1")
 					surface.SetTextColor(col.r,col.g,col.b,255)
 					surface.SetTextPos(pos.x-size/2,pos.y+size)

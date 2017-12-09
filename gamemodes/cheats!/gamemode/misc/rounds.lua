@@ -13,6 +13,20 @@ function RoundMsg(msg)
 	end
 end
 
+function GameStop()
+	RoundMsg("Stopping game..")
+	SetGlobalBool("Deathmatch",true)
+	timer.Remove("LOBBYTIMER")
+	timer.Remove("ROUNDTIMER")
+	timer.Remove("ROUNDENDTIMER")
+	for k,v in pairs(player.GetAll())do
+		if(v:Team() != 0)then
+			v:SetTeam(3)
+			v:Respawn()
+		end
+	end
+end
+
 function GameLobby()
 	timer.Create("LOBBYTIMER",LobbyTimer,1,function() RoundStart() GameStart() end)
 	RoundMsg("Starting new game in "..LobbyTimer.." seconds!")
@@ -55,9 +69,10 @@ function GameWin()
 	RoundMsg("Someone won the game!")
 	SetGlobalBool("Deathmatch",true)
 	for k,v in pairs(player.GetAll())do
-		v:SetTeam(3)
-		v:KillSilent()
-		v:Respawn()
+		if(v:Team() != 0)then
+			v:SetTeam(3)
+			v:Respawn()
+		end
 	end
 end
 

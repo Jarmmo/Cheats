@@ -19,13 +19,16 @@ function F_Crosshair()
 	if (wep.Scoped) then CPos = Vector(ScrW()/2,ScrH()/2) end
 	if (wep.DrawCustomCrosshair == true)then
 		local col = team.GetColor(LocalPlayer():Team())
-		surface.SetDrawColor(col.r,col.g,col.b,255)
-		draw.Circle(CPos.x,CPos.y,3.5,8)
 		if(wep.Scoped == true)then
 			local vel = LocalPlayer():GetVelocity():Length()/7
 			surface.SetDrawColor(col.r,col.g,col.b,50)
-			surface.DrawCircle(CPos.x,CPos.y,math.Clamp((vel)-5,0,9999),col.r,col.g,col.b,255)
+			surface.DrawCircle(CPos.x,CPos.y,math.Clamp((vel)-5,0,9999),20,20,20,200-(vel/50)*255)
+			surface.DrawCircle(CPos.x,CPos.y,math.Clamp((vel)-5,0,9999)-0.5,20,20,20,200-(vel/50)*255)
 		end
+		surface.SetDrawColor(0,0,0,200)
+		draw.Circle(CPos.x,CPos.y,4.2,8)
+		surface.SetDrawColor(col.r,col.g,col.b,255)
+		draw.Circle(CPos.x,CPos.y,3.5,8)
 	end
 end
 hook.Add("HUDPaint","Crosshairi",F_Crosshair)

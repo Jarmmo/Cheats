@@ -8,7 +8,7 @@ SWEP.WorldModel = "models/weapons/w_rif_ak47.mdl"
 SWEP.UseHands = true
 SWEP.SetHoldType = "ar2"
 SWEP.Weight = 2
-SWEP.DrawAmmo = true
+SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 SWEP.DrawCustomCrosshair = true
 SWEP.ViewModelFlip = true
@@ -72,6 +72,8 @@ function SWEP:PrimaryAttack()
 	self:SetNextPrimaryFire(CurTime()+0.12)
 	ply:ViewPunch(Angle(-0.5,math.Rand(-0.5,0.5),0))
 
+	ply:SetAmmo(999,"SMG1")
+
 	ply:LagCompensation(false)
 end
 
@@ -83,9 +85,9 @@ end
 function SWEP:Think()
 	local vel = self:GetOwner():GetVelocity():Length()/15
 	if(self:GetOwner():Crouching())then
-		self.Primary.Spread = (vel/250)+0.02
+		self.Primary.Spread = math.Clamp((vel/200),0.02,5)
 	else
-		self.Primary.Spread = (vel/25)+0.025
+		self.Primary.Spread = math.Clamp((vel/25)-0.4,0.025,5)
 	end
 	return
 end
@@ -158,7 +160,7 @@ hook.Add("CreateMove","AIMBOT",function(asd)
 
 			local target = FindNearestToCrosshair()
 
-			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or (target:IsNPC() and target:Health() >= 0)) and (CheckFOV(target,200) and CheckLOS(target))) then
+			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or (target:IsNPC() and target:Health() >= 0)) and target:Team() != 0 and (CheckFOV(target,200) and CheckLOS(target))) then
 				if (PlaySound) then
 					surface.PlaySound("ui/buttonclick.wav")
 					PlaySound = false
@@ -192,7 +194,7 @@ hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
 	local wep = LocalPlayer():GetActiveWeapon()
 	if(IsValid(wep) and wep:GetClass() == "weapon_autoaim_kalashnikov") then
 		for k,target in pairs(ents.GetAll())do
-			if (IsValid(target)and(target:IsPlayer() or (target:IsNPC() and target:Health() >= 0)) and target != LocalPlayer() and CheckLOS(target)) then
+			if (IsValid(target)and(target:IsPlayer() or (target:IsNPC() and target:Health() >= 0)) and target:Team() != 0 and target != LocalPlayer() and CheckLOS(target)) then
 				if(target:Team() == 3 or (target:Team() != LocalPlayer():Team()))then
 					local targetipos = target:GetBonePosition(target:LookupBone(targetbone))
 					local targetcompare = (targetipos+Vector(0,0,1)):ToScreen()

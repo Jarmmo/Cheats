@@ -3,6 +3,7 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("misc/crosshair.lua")
 AddCSLuaFile("misc/quickswitch.lua")
 AddCSLuaFile("misc/votemap.lua")
+AddCSLuaFile("ui/hud.lua")
 
 include("misc/chatcommands.lua")
 include("misc/votemap.lua")
@@ -111,8 +112,10 @@ function GM:Think()
 	end
 end
 
-hook.Add("PlayerDisconnected","VoteCheck",function()
-	print((table.Count(player.GetAll())-1))
+hook.Add("PlayerDisconnected","VoteCheck",function(ply)
+	if(ply:GetNWBool("Voted"))then
+		SetGlobalInt("Voteamount",GetGlobalInt("Voteamount")-1)
+	end
 	if(100*GetGlobalInt("Voteamount")/(table.Count(player.GetAll())-1) > 75)then
 		RoundStart()
 		SetGlobalBool("Deathmatch",false)
