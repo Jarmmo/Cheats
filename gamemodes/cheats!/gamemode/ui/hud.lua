@@ -40,11 +40,11 @@ hook.Add("HUDPaint","CHEATHUD",function()
 		{ x = ScrW(), y = ScrH()-(h+2)}
 	}
 
-	if(IsValid(wep) and wep.Primary.Ammo != "none")then
+	if(IsValid(wep) and wep.Primary.Ammo != "none" and LocalPlayer():Alive())then
 		draw.NoTexture()
-		surface.SetDrawColor(Color(col.r-100,col.g-100,col.b-100,150))
+		surface.SetDrawColor(Color(col.r-100,col.g-100,col.b-100,100))
 		surface.DrawPoly(points2)
-		surface.SetDrawColor(Color(col.r,col.g,col.b,150))
+		surface.SetDrawColor(Color(col.r,col.g,col.b,100))
 		surface.DrawPoly(points)
 
 		surface.SetFont("Font1")
@@ -71,21 +71,23 @@ hook.Add("HUDPaint","CHEATHUD",function()
 		{ x = w+2, y = ScrH() },
 	}
 
-	draw.NoTexture()
-	surface.SetDrawColor(Color(col.r-100,col.g-100,col.b-100,150))
-	surface.DrawPoly(hp2)
-	surface.SetDrawColor(Color(col.r,col.g,col.b,150))
-	surface.DrawPoly(hp)
+	if(LocalPlayer():Alive())then
+		draw.NoTexture()
+		surface.SetDrawColor(Color(col.r-100,col.g-100,col.b-100,100))
+		surface.DrawPoly(hp2)
+		surface.SetDrawColor(Color(col.r,col.g,col.b,100))
+		surface.DrawPoly(hp)
 
-	surface.SetFont("Font1")
+		surface.SetFont("Font1")
 
-	surface.SetTextColor(0,0,0,255)
-	surface.SetTextPos(60-surface.GetTextSize(math.Clamp(LocalPlayer():Health(),0,100))/2,ScrH()-55)
-	surface.DrawText(math.Clamp(LocalPlayer():Health(),0,100))
+		surface.SetTextColor(0,0,0,255)
+		surface.SetTextPos(60-surface.GetTextSize(math.Clamp(LocalPlayer():Health(),0,100))/2,ScrH()-55)
+		surface.DrawText(math.Clamp(LocalPlayer():Health(),0,100))
 
-	surface.SetTextColor(255,255,255,255)
-	surface.SetTextPos(62-surface.GetTextSize(math.Clamp(LocalPlayer():Health(),0,100))/2,ScrH()-57)
-	surface.DrawText(math.Clamp(LocalPlayer():Health(),0,100))
+		surface.SetTextColor(255,255,255,255)
+		surface.SetTextPos(62-surface.GetTextSize(math.Clamp(LocalPlayer():Health(),0,100))/2,ScrH()-57)
+		surface.DrawText(math.Clamp(LocalPlayer():Health(),0,100))
+	end
 end)
 
 local hide = {

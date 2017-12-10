@@ -24,7 +24,7 @@ SWEP.CanScope = true
 SWEP.Sens = 1
 
 SWEP.Primary.ClipSize = 7
-SWEP.Primary.DefaultClip = 10
+SWEP.Primary.DefaultClip = 7
 SWEP.Primary.Ammo = "SMG1"
 SWEP.Primary.Automatic = true
 SWEP.Primary.Spread = 0.03
@@ -126,7 +126,7 @@ function SWEP:Think()
 		self.Owner:SetFOV( 20, 0 )
 		self.Sens = 0.2
 	elseif(!self.Scoped)then
-		self.Primary.Spread = (vel/5)
+		self.Primary.Spread = (vel/5)+0.3
 
 		self.Owner:SetFOV( 0, 0 )
 		self.Sens = 1
