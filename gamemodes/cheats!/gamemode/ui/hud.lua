@@ -71,7 +71,7 @@ hook.Add("HUDPaint","CHEATHUD",function()
 		{ x = w+2, y = ScrH() },
 	}
 
-	if(LocalPlayer():Alive())then
+	if(LocalPlayer():Alive() and LocalPlayer():Team() != 0)then
 		draw.NoTexture()
 		surface.SetDrawColor(Color(col.r-100,col.g-100,col.b-100,100))
 		surface.DrawPoly(hp2)

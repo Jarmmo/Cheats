@@ -4,12 +4,14 @@ AddCSLuaFile("misc/crosshair.lua")
 AddCSLuaFile("misc/quickswitch.lua")
 AddCSLuaFile("misc/votemap.lua")
 AddCSLuaFile("ui/hud.lua")
+AddCSLuaFile("ui/teammenu.lua")
 
 include("misc/chatcommands.lua")
 include("misc/votemap.lua")
 include("shared.lua")
 include("misc/rounds.lua")
 include("misc/teamfuncs.lua")
+include("ui/teammenu.lua")
 
 
 SetGlobalBool("Deathmatch",true)
@@ -81,6 +83,14 @@ function GM:GetFallDamage(ply)
 		return 0
 	else 
 		return 10
+	end
+end
+
+function GM:PlayerShouldTakeDamage(ply, attacker)
+	if((ply:IsPlayer() and attacker:IsPlayer()) and ply:Team() == attacker:Team() and ply:Team() != 3)then
+		return false
+	else
+		return true
 	end
 end
 

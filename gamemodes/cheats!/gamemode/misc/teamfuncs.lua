@@ -1,4 +1,7 @@
-function ScrambleDM()
+teamf = {}
+
+
+teamf.ScrambleDM = function()
 	local t1 = {}
 	local t2 = {}
 
@@ -24,7 +27,54 @@ function ScrambleDM()
 	end
 end
 
-function ScrambleALL()--debug function
+teamf.SetTeam = function(ply,t)
+	local t1 = team.NumPlayers(1)
+	local t2 = team.NumPlayers(2)
+	if(ply:Team() == 1)then
+		t1 = t1-1
+	elseif(ply:Team() == 2)then
+		t2 = t2-1
+	end
+	if(ply:Team() == t)then
+		ply:ChatPrint("You cant join your own team!")
+	else
+		if(t == 1)then
+			if(GetGlobalBool("Deathmatch"))then
+				ply:ChatPrint("You cant join that team right now!")
+			else
+				if(t1>t2)then
+					ply:ChatPrint("Too much players in Red team")
+				else
+					ply:ChatPrint("Team set to Red")
+					ply:SetTeam(t)
+					ply:Spawn()
+				end
+			end
+		elseif(t == 2)then
+			if(GetGlobalBool("Deathmatch"))then
+				ply:ChatPrint("You cant join that team right now!")
+			else
+				if(t2>t1)then
+					ply:ChatPrint("Too much players in Blue team")
+				else
+					ply:ChatPrint("Team set to Blue")
+					ply:SetTeam(t)
+					ply:Spawn()
+				end
+			end
+		else
+			if(t == 3 and !GetGlobalBool("Deathmatch"))then
+				ply:ChatPrint("You cant join that team right now!")
+			else
+				ply:ChatPrint("Team set to "..team.GetName(t))
+				ply:SetTeam(t)
+				ply:Spawn()
+			end
+		end
+	end
+end
+
+teamf.ScrambleAll = function()--debug function
 	local t1 = {}
 	local t2 = {}
 

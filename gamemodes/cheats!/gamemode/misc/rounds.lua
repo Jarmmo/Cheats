@@ -22,24 +22,14 @@ function GameStop()
 	for k,v in pairs(player.GetAll())do
 		if(v:Team() != 0)then
 			v:SetTeam(3)
-			v:Respawn()
+			v:Spawn()
 		end
 	end
 end
 
-function GameLobby()
-	timer.Create("LOBBYTIMER",LobbyTimer,1,function() RoundStart() GameStart() end)
-	RoundMsg("Starting new game in "..LobbyTimer.." seconds!")
-	net.Start("ROUNDLOBBY")
-	net.Send(player.GetAll())
-end
-
-function GameStart()
-	SetGlobalBool("Deathmatch",false)
-	ScrambleDM()
-end
-
 function RoundStart()
+	teamf.ScrambleDM()
+
 	RoundMsg("A round has started!")
 
 	for k,v in pairs(player.GetAll())do
@@ -51,6 +41,14 @@ function RoundStart()
 	timer.Create("ROUNDTIMER",RoundDuration,1,RoundEnd)
 
 	net.Start("ROUNDSTART")
+	net.Send(player.GetAll())
+end
+
+function GameLobby()
+	SetGlobalBool("Deathmatch",false)
+	timer.Create("LOBBYTIMER",LobbyTimer,1,RoundStart)
+	RoundMsg("Starting new game in "..LobbyTimer.." seconds, pick your team!")
+	net.Start("ROUNDLOBBY")
 	net.Send(player.GetAll())
 end
 
@@ -71,7 +69,7 @@ function GameWin()
 	for k,v in pairs(player.GetAll())do
 		if(v:Team() != 0)then
 			v:SetTeam(3)
-			v:Respawn()
+			v:Spawn()
 		end
 	end
 end

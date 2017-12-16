@@ -11,7 +11,6 @@ SWEP.Weight = 1
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
 SWEP.DrawCustomCrosshair = true
-SWEP.DrawHud = false
 SWEP.ViewModelFlip = true
 SWEP.Slot = 1
 SWEP.SlotPos = 1
@@ -46,9 +45,6 @@ function SWEP:Deploy()
 	if (SERVER) then
 		self:GetOwner():EmitSound("npc/sniper/reload1.wav")
 	end
-	timer.Create("DRAWHUD",1.25,1,function()
-		self.DrawHud = true
-	end)
 	self.Sens = 1
 	self.Scoped = false
 	self.CanScope = true
@@ -95,7 +91,6 @@ function SWEP:AdjustMouseSensitivity()
 end
 
 function SWEP:SecondaryAttack()
-	if(!self.DrawHud)then return end
 	if (!self.Scoped and self.CanScope)then
 		self.Scoped = true
 		self.CanScope = false
@@ -110,7 +105,7 @@ function SWEP:SecondaryAttack()
 		end)
 	end
 end
-	
+
 function SWEP:Reload()
 	self.Weapon:DefaultReload( ACT_VM_RELOAD );
 	self.Scoped = false
@@ -157,12 +152,6 @@ surface.DrawLine( startx+1, starty-1, endx+1, endy-1)
 surface.DrawLine( startx-1, starty-1, endx-1, endy-1)
 end
 
-function SWEP:Holster()
-	self.DrawHud = false
-	timer.Remove("DRAWHUD")
-	return true
-end
-
 if !CLIENT then return end
 
 local function CreateFont()
@@ -185,16 +174,13 @@ end
 CreateFont() -- create font twice just in case 
 
 function SWEP:DrawHUD()
-	if !self.DrawHud then return end
-
 	local mat1 = Material("gmod/scope")
-	--local mat2 = Material("gmod/scope-refract") figure this shit out
 
 	if (self.Scoped) then
 		surface.SetDrawColor(0,0,0)
 		surface.DrawRect(0,0,ScrW()/2-(ScrH()+ScrH()/4)/2,ScrH())
 		surface.DrawRect(ScrW()-(ScrW()/2-(ScrH()+ScrH()/4)/2),0,ScrW()/2-(ScrH()+ScrH()/4)/2,ScrH())
-		
+
 		surface.SetMaterial(mat1)
 
 		surface.DrawTexturedRect( ScrW()/2-(ScrH()+ScrH()/4)/2, 0, ScrH()+ScrH()/4, ScrH() )
@@ -217,7 +203,7 @@ function SWEP:DrawHUD()
 		if (IsValid(v[1]) and (v[1] != LocalPlayer())) then
 			if(v[1]:Team() == 3 or (v[1]:Team() != LocalPlayer():Team()))then
 				local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
-				
+
 				if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)) and !self.Scoped)then
 					DrawFancyLine(hitpos.x,hitpos.y,pos.x,pos.y,col.r,col.g,col.b)
 				end
