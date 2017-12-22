@@ -194,7 +194,7 @@ hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
 	local wep = LocalPlayer():GetActiveWeapon()
 	if(IsValid(wep) and wep:GetClass() == "weapon_autoaim_kalashnikov") then
 		for k,target in pairs(ents.GetAll())do
-			if (IsValid(target)and(target:IsPlayer() or (target:IsNPC() and target:Health() >= 0)) and target:Team() != 0 and target != LocalPlayer() and CheckLOS(target)) then
+			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or (target:IsNPC() and target:Health() > 0)) and target:Team() != 0 and target != LocalPlayer() and CheckLOS(target)) then
 				if(target:Team() == 3 or (target:Team() != LocalPlayer():Team()))then
 					local targetipos = target:GetBonePosition(target:LookupBone(targetbone))
 					local targetcompare = (targetipos+Vector(0,0,1)):ToScreen()

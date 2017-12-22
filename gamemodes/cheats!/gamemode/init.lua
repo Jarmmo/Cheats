@@ -5,6 +5,7 @@ AddCSLuaFile("misc/quickswitch.lua")
 AddCSLuaFile("misc/votemap.lua")
 AddCSLuaFile("ui/hud.lua")
 AddCSLuaFile("ui/teammenu.lua")
+AddCSLuaFile("ui/roundgraphics.lua")
 
 include("misc/chatcommands.lua")
 include("misc/votemap.lua")
@@ -12,7 +13,6 @@ include("shared.lua")
 include("misc/rounds.lua")
 include("misc/teamfuncs.lua")
 include("ui/teammenu.lua")
-
 
 SetGlobalBool("Deathmatch",true)
 SetGlobalInt("Voteamount",0)
@@ -52,6 +52,14 @@ function GM:PlayerSpawn( ply )
 	end)
 	ply:SetJumpPower(300)
 	ply:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
+end
+
+function GM:PlayerDeathThink(ply)
+	if(!GetGlobalBool("Deathmatch"))then
+		return false
+	else
+		return true
+	end
 end
 
 function GM:PlayerLoadout(ply)

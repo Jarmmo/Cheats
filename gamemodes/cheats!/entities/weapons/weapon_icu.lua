@@ -64,7 +64,7 @@ function SWEP:PrimaryAttack()
 		Dir = ply:GetAimVector(),
 		Spread = Vector(self.Primary.Spread,self.Primary.Spread,0),
 		Tracer = 0,
-		Damage = 100,
+		Damage = 200,
 		AmmoType = self.Primary.Ammo,
 		Attacker = ply,
 		HullSize = 0,
@@ -92,12 +92,14 @@ end
 
 function SWEP:SecondaryAttack()
 	if (!self.Scoped and self.CanScope)then
+		GAMEMODE:SetPlayerSpeed(self:GetOwner(),100,200)
 		self.Scoped = true
 		self.CanScope = false
 		timer.Simple(0.5,function()
 			self.CanScope = true
 		end)
 	elseif(self.Scoped and self.CanScope)then
+		GAMEMODE:SetPlayerSpeed(self:GetOwner(),200,350)
 		self.Scoped = false
 		self.CanScope = false
 		timer.Simple(0.5,function()
@@ -108,11 +110,16 @@ end
 
 function SWEP:Reload()
 	self.Weapon:DefaultReload( ACT_VM_RELOAD );
+	GAMEMODE:SetPlayerSpeed(self:GetOwner(),200,350)
 	self.Scoped = false
 	self.Owner:SetFOV( 0, 0 )
 	self.Sens = 1
 end
 
+function SWEP:Holster()
+	GAMEMODE:SetPlayerSpeed(self:GetOwner(),200,350)
+	return true
+end
 function SWEP:Think()
 	local vel = self:GetOwner():GetVelocity():Length()/15
 	if(self.Scoped)then
@@ -171,43 +178,37 @@ local function CreateFont()
 		antialias = true
 	})
 end
-CreateFont() -- create font twice just in case 
+CreateFont() -- create font twice just in case
 
 function SWEP:DrawHUD()
-	local mat1 = Material("gmod/scope")
-
-	if (self.Scoped) then
-		surface.SetDrawColor(0,0,0)
-		surface.DrawRect(0,0,ScrW()/2-(ScrH()+ScrH()/4)/2,ScrH())
-		surface.DrawRect(ScrW()-(ScrW()/2-(ScrH()+ScrH()/4)/2),0,ScrW()/2-(ScrH()+ScrH()/4)/2,ScrH())
-
-		surface.SetMaterial(mat1)
-
-		surface.DrawTexturedRect( ScrW()/2-(ScrH()+ScrH()/4)/2, 0, ScrH()+ScrH()/4, ScrH() )
-	end
-
 	for k,v in pairs(playerpos) do
 		local col = team.GetColor(LocalPlayer():Team())
 
 		local pos
 		local compare
 
-		if(v[1]:IsDormant())then
+		if(IsValid(v[1]) and v[1]:IsDormant())then
 			pos = v[2]:ToScreen()
 			compare = (v[2]+Vector(0,0,1)):ToScreen()
-		else
+		elseif(IsValid(v[1]) and !v[1]:IsDormant())then
 			pos = v[1]:LocalToWorld(v[1]:OBBCenter()):ToScreen()
 			compare = (v[1]:LocalToWorld(v[1]:OBBCenter())+Vector(0,0,1)):ToScreen()
 		end
 
-		if (IsValid(v[1]) and (v[1] != LocalPlayer())) then
+		if (IsValid(v[1]) and (v[1] != LocalPlayer()) and v[1]:Alive()) then
 			if(v[1]:Team() == 3 or (v[1]:Team() != LocalPlayer():Team()))then
-				local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
 
-				if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)) and !self.Scoped)then
+				local size = math.Distance(pos.x,pos.y,compare.x,compare.y)*40
+				local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
+				
+				if(self.Scoped)then
+					hitpos = {x = ScrW()/2,y = ScrH()/2}
+				end
+
+				if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)))then
 					DrawFancyLine(hitpos.x,hitpos.y,pos.x,pos.y,col.r,col.g,col.b)
 				end
-				local size = math.Distance(pos.x,pos.y,compare.x,compare.y)*40
+				
 
 				if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)))then
 
@@ -237,5 +238,16 @@ function SWEP:DrawHUD()
 				end
 			end
 		end
+	end
+
+	local mat1 = Material("gmod/scope")
+	if (self.Scoped) then
+		surface.SetDrawColor(0,0,0)
+		surface.DrawRect(0,0,ScrW()/2-(ScrH()+ScrH()/4)/2,ScrH())
+		surface.DrawRect(ScrW()-(ScrW()/2-(ScrH()+ScrH()/4)/2),0,ScrW()/2-(ScrH()+ScrH()/4)/2,ScrH())
+
+		surface.SetMaterial(mat1)
+
+		surface.DrawTexturedRect( ScrW()/2-(ScrH()+ScrH()/4)/2, 0, ScrH()+ScrH()/4, ScrH() )
 	end
 end

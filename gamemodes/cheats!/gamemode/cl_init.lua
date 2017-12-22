@@ -4,6 +4,7 @@ include("misc/quickswitch.lua")
 include("misc/votemap.lua")
 include("ui/hud.lua")
 include("ui/teammenu.lua")
+include("ui/roundgraphics.lua")
 
 hook.Add("HUDPaint","SpawnSelectTeam",function()
 	TeamMenu()
