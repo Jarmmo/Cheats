@@ -87,7 +87,7 @@ function SWEP:Think()
 	if(self:GetOwner():Crouching())then
 		self.Primary.Spread = math.Clamp((vel/200),0.02,5)
 	else
-		self.Primary.Spread = math.Clamp((vel/25)-0.4,0.025,5)
+		self.Primary.Spread = math.Clamp((vel/25)-0.5,0.025,5)
 	end
 	return
 end
@@ -160,7 +160,7 @@ hook.Add("CreateMove","AIMBOT",function(asd)
 
 			local target = FindNearestToCrosshair()
 
-			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or (target:IsNPC() and target:Health() >= 0)) and target:Team() != 0 and (CheckFOV(target,200) and CheckLOS(target))) then
+			if(IsValid(target)and((target:IsPlayer()and target:Alive()) or (target:IsNPC() and target:Health() >= 0)) and target:Team() != 0 and (CheckFOV(target,200) and CheckLOS(target))) then
 				if (PlaySound) then
 					surface.PlaySound("ui/buttonclick.wav")
 					PlaySound = false

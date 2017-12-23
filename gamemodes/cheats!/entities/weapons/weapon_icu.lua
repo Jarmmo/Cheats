@@ -21,6 +21,7 @@ SWEP.CSMuzzleFlashes = true
 SWEP.Scoped = false
 SWEP.CanScope = true
 SWEP.Sens = 1
+SWEP.ShouldDropOnDie = false
 
 SWEP.Primary.ClipSize = 7
 SWEP.Primary.DefaultClip = 7
@@ -33,7 +34,9 @@ SWEP.Secondary.DefaultClip = -1
 SWEP.Secondary.Ammo = "none"
 SWEP.Secondary.Automatic = true
 
-SWEP.ShouldDropOnDie = false
+SWEP.ShowESP = false
+SWEP.ESPCheck = false
+SWEP.ESPTimer = 0
 
 local shoot = Sound("weapons/awp/awp1.wav")
 
@@ -42,6 +45,8 @@ function SWEP:Initialize()
 end
 
 function SWEP:Deploy()
+	self.ShowESP = false
+	self.ESPCheck = false
 	if (SERVER) then
 		self:GetOwner():EmitSound("npc/sniper/reload1.wav")
 	end
@@ -118,12 +123,22 @@ end
 
 function SWEP:Holster()
 	GAMEMODE:SetPlayerSpeed(self:GetOwner(),200,350)
+	self.ShowESP = false
+	self.ESPCheck = false
 	return true
 end
+
 function SWEP:Think()
+	if(!self.ESPCheck)then
+		self.ESPCheck = true
+		self.ESPTimer = CurTime()
+	end
+	if((CurTime()-self.ESPTimer)>1.2)then
+		self.ShowESP = true
+	end
 	local vel = self:GetOwner():GetVelocity():Length()/15
 	if(self.Scoped)then
-		self.Primary.Spread = math.Clamp((vel/200)-0.005,0,9999)
+		self.Primary.Spread = math.Clamp((vel/200)-0.02,0,9999)
 
 		self.Owner:SetFOV( 20, 0 )
 		self.Sens = 0.2
@@ -181,60 +196,62 @@ end
 CreateFont() -- create font twice just in case
 
 function SWEP:DrawHUD()
-	for k,v in pairs(playerpos) do
-		local col = team.GetColor(LocalPlayer():Team())
+	if self.ShowESP then
+		for k,v in pairs(playerpos) do
+			local col = team.GetColor(LocalPlayer():Team())
 
-		local pos
-		local compare
+			local pos
+			local compare
 
-		if(IsValid(v[1]) and v[1]:IsDormant())then
-			pos = v[2]:ToScreen()
-			compare = (v[2]+Vector(0,0,1)):ToScreen()
-		elseif(IsValid(v[1]) and !v[1]:IsDormant())then
-			pos = v[1]:LocalToWorld(v[1]:OBBCenter()):ToScreen()
-			compare = (v[1]:LocalToWorld(v[1]:OBBCenter())+Vector(0,0,1)):ToScreen()
-		end
+			if(IsValid(v[1]) and v[1]:IsDormant())then
+				pos = v[2]:ToScreen()
+				compare = (v[2]+Vector(0,0,1)):ToScreen()
+			elseif(IsValid(v[1]) and !v[1]:IsDormant())then
+				pos = v[1]:LocalToWorld(v[1]:OBBCenter()):ToScreen()
+				compare = (v[1]:LocalToWorld(v[1]:OBBCenter())+Vector(0,0,1)):ToScreen()
+			end
 
-		if (IsValid(v[1]) and (v[1] != LocalPlayer()) and v[1]:Alive()) then
-			if(v[1]:Team() == 3 or (v[1]:Team() != LocalPlayer():Team()))then
+			if (IsValid(v[1]) and (v[1] != LocalPlayer()) and v[1]:Alive()) then
+				if(v[1]:Team() == 3 or (v[1]:Team() != LocalPlayer():Team()))then
 
-				local size = math.Distance(pos.x,pos.y,compare.x,compare.y)*40
-				local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
-				
-				if(self.Scoped)then
-					hitpos = {x = ScrW()/2,y = ScrH()/2}
-				end
-
-				if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)))then
-					DrawFancyLine(hitpos.x,hitpos.y,pos.x,pos.y,col.r,col.g,col.b)
-				end
-				
-
-				if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)))then
-
-					surface.SetFont("ESPFont1")
-					surface.SetTextColor(col.r,col.g,col.b,255)
-					surface.SetTextPos(pos.x-size/2,pos.y+size)
-					local txt = ""
-					if(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_bunnyclaw")then
-						txt = "Bunny's Claw"
-					elseif(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_icu")then
-						txt = "ICU-2000"
-					elseif(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_autoaim_kalashnikov")then
-						txt = "Autoaim Kalashnikov-47"
-					elseif(IsValid(v[1]:GetActiveWeapon()))then
-						txt = v[1]:GetActiveWeapon():GetClass()
+					local size = math.Distance(pos.x,pos.y,compare.x,compare.y)*40
+					local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
+					
+					if(self.Scoped)then
+						hitpos = {x = ScrW()/2,y = ScrH()/2}
 					end
-					surface.DrawText(v[1]:Health().."/100")
-					surface.SetFont("ESPFont2")
-					surface.SetTextPos(pos.x-size/2,pos.y+size+15)
 
-					surface.DrawText(txt)
+					if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)))then
+						DrawFancyLine(hitpos.x,hitpos.y,pos.x,pos.y,col.r,col.g,col.b)
+					end
+					
 
-					surface.SetDrawColor(col.r,col.g,col.b,10)
-					surface.DrawRect(pos.x-size/2,pos.y-size,size,size*2)
-					surface.SetDrawColor(col.r,col.g,col.b,255)
-					surface.DrawOutlinedRect(pos.x-size/2,pos.y-size,size,size*2)
+					if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)))then
+
+						surface.SetFont("ESPFont1")
+						surface.SetTextColor(col.r,col.g,col.b,255)
+						surface.SetTextPos(pos.x-size/2,pos.y+size)
+						local txt = ""
+						if(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_bunnyclaw")then
+							txt = "Bunny's Claw"
+						elseif(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_icu")then
+							txt = "ICU-2000"
+						elseif(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_autoaim_kalashnikov")then
+							txt = "Autoaim Kalashnikov-47"
+						elseif(IsValid(v[1]:GetActiveWeapon()))then
+							txt = v[1]:GetActiveWeapon():GetClass()
+						end
+						surface.DrawText(v[1]:Health().."/100")
+						surface.SetFont("ESPFont2")
+						surface.SetTextPos(pos.x-size/2,pos.y+size+15)
+
+						surface.DrawText(txt)
+
+						surface.SetDrawColor(col.r,col.g,col.b,10)
+						surface.DrawRect(pos.x-size/2,pos.y-size,size,size*2)
+						surface.SetDrawColor(col.r,col.g,col.b,255)
+						surface.DrawOutlinedRect(pos.x-size/2,pos.y-size,size,size*2)
+					end
 				end
 			end
 		end

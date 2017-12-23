@@ -8,10 +8,13 @@ if CLIENT then
 	function SpawnEffect()
 		SETimeex = SysTime()
 		SEAlpha = 255
+		hook.Add("PostRenderVGUI","DrawSpawnEffect",spawneffectf)
 	end
-	hook.Add("PostRenderVGUI","DrawSpawnEffect",function()
-		print(SEAlpha-(SysTime()-SETimeex)*100)
+	function spawneffectf()
+		if(SEAlpha < 0)then
+			hook.Remove("PostRenderVGUI","DrawSpawnEffect")
+		end
 		surface.SetDrawColor(200,200,200,math.Clamp(SEAlpha-(SysTime()-SETimeex)*500,0,255))
 		surface.DrawRect(0,0,ScrW(),ScrH())
-	end)
+	end
 end
