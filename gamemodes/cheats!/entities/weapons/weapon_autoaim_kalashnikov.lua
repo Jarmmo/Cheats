@@ -160,7 +160,7 @@ hook.Add("CreateMove","AIMBOT",function(asd)
 
 			local target = FindNearestToCrosshair()
 
-			if(IsValid(target)and((target:IsPlayer()and target:Alive()) or (target:IsNPC() and target:Health() >= 0)) and target:Team() != 0 and (CheckFOV(target,200) and CheckLOS(target))) then
+			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or (target:IsNPC() and target:Health() >= 0)) and target:Team() != 0 and (CheckFOV(target,200) and CheckLOS(target))) then
 				if (PlaySound) then
 					surface.PlaySound("ui/buttonclick.wav")
 					PlaySound = false
