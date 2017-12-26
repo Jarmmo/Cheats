@@ -6,6 +6,7 @@ include("misc/votemap.lua")
 include("ui/hud.lua")
 include("ui/teammenu.lua")
 include("ui/roundgraphics.lua")
+include("misc/sh_playerdeath.lua")
 include("ui/spawneffect.lua")
 
 hook.Remove("CreateMove","AIMBOT")
