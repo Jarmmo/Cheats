@@ -1,5 +1,5 @@
 local function defaults()
-	LobbyTimer = 10
+	LobbyTimer = 30
 	RoundDuration = 300
 	RoundEndTime = 5
 	RoundCount = 0
@@ -8,9 +8,9 @@ local function defaults()
 end
 defaults()
 
-function RoundMsg(msg)
+function RoundMsg(asd)
 	for k, v in pairs(player.GetAll()) do
-		v:ChatPrint(msg)
+		v:SendLua("hook.Call('RoundMsg', GM, '"..asd.."' )")
 	end
 end
 
@@ -80,7 +80,6 @@ end
 function GameLobby()
 	SetGlobalBool("Deathmatch",false)
 	timer.Create("LOBBYTIMER",LobbyTimer,1,RoundStart)
-	RoundMsg("Starting new game in "..LobbyTimer.." seconds, pick your team!")
 	for k,v in pairs(player.GetAll())do
 		if(v:Team() != 0)then
 			v:SendLua("hook.Run('GameLobby',"..LobbyTimer..")")
@@ -108,7 +107,6 @@ function RoundEnd(winner)
 	if(RoundCount >= RoundLimit)then
 		GameWin()	
 	else
-		RoundMsg("A round has ended!")
 		timer.Create("ROUNDENDTIMER",RoundEndTime,1,RoundStart)
 		for k,v in pairs(player.GetAll())do
 			if(v:Team() != 0)then

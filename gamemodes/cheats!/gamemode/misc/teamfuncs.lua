@@ -1,6 +1,10 @@
 teamf = {}
 
 
+teamf.TeamMsg = function(ply,asd,col)
+	ply:SendLua("hook.Call('TeamMsg', GM, '"..asd.."',{r="..col.r..",g="..col.g..",b="..col.b..",a=255} )")
+end
+
 teamf.ScrambleDM = function()
 	local t1 = {}
 	local t2 = {}
@@ -36,37 +40,37 @@ teamf.SetTeam = function(ply,t)
 		t2 = t2-1
 	end
 	if(ply:Team() == t)then
-		ply:ChatPrint("You cant join your own team!")
+		teamf.TeamMsg(ply,"You cant join your own team!",Color(255,0,0))
 	else
 		if(t == 1)then
 			if(GetGlobalBool("Deathmatch"))then
-				ply:ChatPrint("You cant join that team right now!")
+				teamf.TeamMsg(ply,"You cant join that team right now!",Color(255,0,0))
 			else
 				if(t1>t2)then
-					ply:ChatPrint("Too much players in Red team")
+					teamf.TeamMsg(ply,"Too much players in Red team",Color(255,0,0))
 				else
-					ply:ChatPrint("Team set to Red")
+					teamf.TeamMsg(ply,"Team set to Red",team.GetColor(t))
 					ply:SetTeam(t)
 					ply:Spawn()
 				end
 			end
 		elseif(t == 2)then
 			if(GetGlobalBool("Deathmatch"))then
-				ply:ChatPrint("You cant join that team right now!")
+				teamf.TeamMsg(ply,"You cant join that team right now!",Color(255,0,0))
 			else
 				if(t2>t1)then
-					ply:ChatPrint("Too much players in Blue team")
+					teamf.TeamMsg(ply,"Too much players in Blue team",Color(255,0,0))
 				else
-					ply:ChatPrint("Team set to Blue")
+					teamf.TeamMsg(ply,"Team set to Blue",team.GetColor(t))
 					ply:SetTeam(t)
 					ply:Spawn()
 				end
 			end
 		else
 			if(t == 3 and !GetGlobalBool("Deathmatch"))then
-				ply:ChatPrint("You cant join that team right now!")
+				teamf.TeamMsg(ply,"You cant join that team right now!",Color(255,0,0))
 			else
-				ply:ChatPrint("Team set to "..team.GetName(t))
+				teamf.TeamMsg(ply,"Team set to "..team.GetName(t),team.GetColor(t))
 				ply:SetTeam(t)
 				ply:Spawn()
 			end
