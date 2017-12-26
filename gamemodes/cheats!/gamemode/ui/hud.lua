@@ -90,7 +90,8 @@ local hide = {
 	CHudCrosshair = true,
 	CHudSecondaryAmmo = true,
 	CHudZoom = true,
-	CHudWeaponSelection = true
+	CHudWeaponSelection = true,
+	CHudDamageIndicator = true
 }
 
 hook.Add("HUDShouldDraw","HideHUD",function(name)

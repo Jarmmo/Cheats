@@ -83,11 +83,11 @@ end
 
 
 function SWEP:Think()
-	local vel = self:GetOwner():GetVelocity():Length()/15
+	--local vel = self:GetOwner():GetVelocity():Length()/15
 	if(self:GetOwner():Crouching())then
-		self.Primary.Spread = math.Clamp((vel/200),0.02,5)
+		self.Primary.Spread = 0.02
 	else
-		self.Primary.Spread = math.Clamp((vel/25)-0.5,0.025,5)
+		self.Primary.Spread = 0.04
 	end
 	return
 end
@@ -145,7 +145,7 @@ end
 local SnapAim = false
 local PlaySound = true
 
-hook.Add("CreateMove","AIMBOT",function(asd)
+hook.Add("HUDPaint","AIMBOT",function()
 	if (input.IsButtonDown(MOUSE_RIGHT))then
 		SnapAim = true
 	elseif (!input.IsButtonDown(MOUSE_RIGHT))then
@@ -166,7 +166,7 @@ hook.Add("CreateMove","AIMBOT",function(asd)
 					PlaySound = false
 				end
 				local targetbonepos = target:GetBonePosition(target:LookupBone(targetbone))
-				asd:SetViewAngles((targetbonepos - ply:EyePos()):Angle())
+				LocalPlayer():SetEyeAngles((targetbonepos - ply:EyePos()):Angle())
 			end
 		end
 	end

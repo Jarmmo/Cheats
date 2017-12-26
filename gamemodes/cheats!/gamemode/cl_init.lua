@@ -7,6 +7,8 @@ include("ui/teammenu.lua")
 include("ui/roundgraphics.lua")
 include("ui/spawneffect.lua")
 
+hook.Remove("CreateMove","AIMBOT")
+
 hook.Add("HUDPaint","SpawnSelectTeam",function()
 	TeamMenu()
 	hook.Remove("HUDPaint","SpawnSelectTeam")
