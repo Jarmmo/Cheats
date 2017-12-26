@@ -14,7 +14,9 @@ hook.Remove("CreateMove","AIMBOT")
 RoundStarted = false
 
 hook.Add("HUDPaint","SpawnSelectTeam",function()
-	TeamMenu()
+	if(LocalPlayer():Team() == 0)then
+		TeamMenu()
+	end
 	hook.Remove("HUDPaint","SpawnSelectTeam")
 end)
 
