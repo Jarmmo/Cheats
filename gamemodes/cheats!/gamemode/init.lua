@@ -49,6 +49,7 @@ function GM:PlayerDeath(ply,ent,attacker)
 	else
 		ply:SendLua("hook.Call('CHDeath',GM,'" .. attacker:Name() .. "','"..ent:GetClass().."')")
 	end
+		attacker:SendLua("hook.Call('CHKill',GM,'".. ply:Name() .."')")
 	timer.Simple(3,function() 
 		ply:Spawn()
 	end)
