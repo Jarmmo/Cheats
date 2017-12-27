@@ -211,7 +211,7 @@ function SWEP:DrawHUD()
 				compare = (v[1]:LocalToWorld(v[1]:OBBCenter())+Vector(0,0,1)):ToScreen()
 			end
 
-			if (IsValid(v[1]) and (v[1] != LocalPlayer()) and v[1]:Alive()) then
+			if (IsValid(v[1]) and (v[1] != LocalPlayer()) and v[1]:Alive() and v[1]:Team() != 0) then
 				if(v[1]:Team() == 3 or (v[1]:Team() != LocalPlayer():Team()))then
 
 					local size = math.Distance(pos.x,pos.y,compare.x,compare.y)*40

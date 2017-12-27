@@ -10,6 +10,7 @@ AddCSLuaFile("ui/teamgraphics.lua")
 AddCSLuaFile("ui/roundgraphics.lua")
 AddCSLuaFile("ui/spawneffect.lua")
 AddCSLuaFile("ui/targetid.lua")
+AddCSLuaFile("ui/killnotif.lua")
 
 include("misc/spec.lua")
 include("misc/chatcommands.lua")
@@ -42,7 +43,18 @@ local PlayerModels = {
 	"models/player/group01/male_09.mdl"
 }
 
-function GM:PlayerSpawn( ply )
+function GM:PlayerDeath(ply,ent,attacker)
+	if(ply == attacker)then
+		ply:SendLua("hook.Call('CHDeath',GM,true)")
+	else
+		ply:SendLua("hook.Call('CHDeath',GM,'" .. attacker:Name() .. "','"..ent:GetClass().."')")
+	end
+	timer.Simple(3,function() 
+		ply:Spawn()
+	end)
+end
+
+function GM:PlayerSpawn(ply)
 	if(ply:Team() != 0)then
 		ply:UnSpectate()
 		--ply:SetTeam(math.random(1, 2))
@@ -84,12 +96,6 @@ end
 function GM:CanPlayerSuicide(ply)
 	if(ply:Alive() and ply:Team() != 0)then
 		return (GetGlobalBool("Deathmatch") or GetGlobalBool("Lobby"))
-	end
-end
-
-function GM:KeyPress(ply)
-	if(!ply:Alive() and (GetGlobalBool("Deathmatch") or GetGlobalBool("Lobby")))then
-		ply:Spawn()
 	end
 end
 

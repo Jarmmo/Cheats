@@ -9,6 +9,7 @@ include("ui/teamgraphics.lua")
 include("misc/sh_playerdeath.lua")
 include("ui/spawneffect.lua")
 include("ui/targetid.lua")
+include("ui/killnotif.lua")
 
 hook.Remove("CreateMove","AIMBOT")
 
