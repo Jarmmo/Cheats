@@ -1,5 +1,5 @@
 local function defaults()
-	LobbyTimer = 30
+	LobbyTimer = 10
 	RoundDuration = 300
 	RoundEndTime = 5
 	RoundCount = 0
@@ -17,6 +17,7 @@ end
 function GameStop()
 	RoundMsg("Stopping game..")
 	hook.Remove("Think","CHRoundThink")
+	SetGlobalBool("Lobby",false)
 	SetGlobalBool("Deathmatch",true)
 	timer.Remove("LOBBYTIMER")
 	timer.Remove("ROUNDTIMER")
@@ -24,6 +25,7 @@ function GameStop()
 	defaults()
 	for k,v in pairs(player.GetAll())do
 		if(v:Team() != 0)then
+			v:UnSpectate()
 			v:SendLua("hook.Call('GameStop')")
 			v:SetTeam(3)
 			v:Spawn()
@@ -33,11 +35,13 @@ end
 
 function RoundStart()
 	teamf.ScrambleDM()
+	SetGlobalBool("Lobby",false)
 
 	RoundMsg("A round has started!")
 
 	for k,v in pairs(player.GetAll())do
 		if(v:Team() == 1 or v:Team() == 2)then
+			v:UnSpectate()
 			v:Spawn()
 			v:SendLua("hook.Run('RoundStart',"..RoundScore.red..","..RoundScore.blue..")")
 		end
@@ -78,6 +82,7 @@ function RoundStart()
 end
 
 function GameLobby()
+	SetGlobalBool("Lobby",true)
 	SetGlobalBool("Deathmatch",false)
 	timer.Create("LOBBYTIMER",LobbyTimer,1,RoundStart)
 	for k,v in pairs(player.GetAll())do
@@ -124,6 +129,7 @@ function GameWin()
 	timer.Create("ROUNDENDTIMER",RoundEndTime,1,function()
 		for k,v in pairs(player.GetAll())do
 			if(v:Team() != 0)then
+				v:UnSpectate()
 				v:SetTeam(3)
 				v:Spawn()
 			end

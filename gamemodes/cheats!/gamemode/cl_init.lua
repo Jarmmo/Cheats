@@ -1,6 +1,5 @@
 include("shared.lua")
 include("misc/crosshair.lua")
-include("misc/cl_spectate.lua")
 include("misc/quickswitch.lua")
 include("misc/votemap.lua")
 include("ui/hud.lua")
@@ -9,6 +8,7 @@ include("ui/roundgraphics.lua")
 include("ui/teamgraphics.lua")
 include("misc/sh_playerdeath.lua")
 include("ui/spawneffect.lua")
+include("ui/targetid.lua")
 
 hook.Remove("CreateMove","AIMBOT")
 

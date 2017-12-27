@@ -4,13 +4,14 @@ AddCSLuaFile("misc/crosshair.lua")
 AddCSLuaFile("misc/quickswitch.lua")
 AddCSLuaFile("misc/votemap.lua")
 AddCSLuaFile("misc/sh_playerdeath.lua")
-AddCSLuaFile("misc/cl_spectate.lua")
 AddCSLuaFile("ui/hud.lua")
 AddCSLuaFile("ui/teammenu.lua")
 AddCSLuaFile("ui/teamgraphics.lua")
 AddCSLuaFile("ui/roundgraphics.lua")
 AddCSLuaFile("ui/spawneffect.lua")
+AddCSLuaFile("ui/targetid.lua")
 
+include("misc/spec.lua")
 include("misc/chatcommands.lua")
 include("misc/votemap.lua")
 include("shared.lua")
@@ -61,7 +62,7 @@ function GM:PlayerSpawn( ply )
 end
 
 function GM:PlayerDeathThink(ply)
-	if(!GetGlobalBool("Deathmatch"))then
+	if(!GetGlobalBool("Deathmatch") and !GetGlobalBool("Lobby"))then
 		return false
 	else
 		return true
@@ -81,13 +82,13 @@ function GM:PlayerInitialSpawn( ply )
 end
 
 function GM:CanPlayerSuicide(ply)
-	if(ply:Alive() and ply:Team() != 0 and GetGlobalBool("Deathmatch"))then
-		ply:KillSilent()
+	if(ply:Alive() and ply:Team() != 0)then
+		return (GetGlobalBool("Deathmatch") or GetGlobalBool("Lobby"))
 	end
 end
 
 function GM:KeyPress(ply)
-	if(!ply:Alive() and GetGlobalBool("Deathmatch"))then
+	if(!ply:Alive() and (GetGlobalBool("Deathmatch") or GetGlobalBool("Lobby")))then
 		ply:Spawn()
 	end
 end

@@ -17,7 +17,7 @@ function F_Crosshair()
 	local wep = LocalPlayer():GetActiveWeapon()
 	local CPos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
 	if (wep.Scoped) then CPos = Vector(ScrW()/2,ScrH()/2) end
-	if (wep.DrawCustomCrosshair == true)then
+	if (wep.DrawCustomCrosshair == true and LocalPlayer():Alive())then
 		local col = team.GetColor(LocalPlayer():Team())
 		if(wep.Scoped == true)then
 			local vel = LocalPlayer():GetVelocity():Length()/7

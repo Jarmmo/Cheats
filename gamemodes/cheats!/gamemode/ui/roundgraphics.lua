@@ -43,7 +43,7 @@ hook.Add("RoundMsg","RoundMsg",function(msg)
 	hook.Add("HUDPaint","RoundMsg",function()
 		local timeex = SysTime()-time
 		local col = team.GetColor(LocalPlayer():Team())
-		local pos = math.Clamp(math.sin((timeex*math.pi)/5)*1000,0,400)
+		local pos = math.Clamp(math.sin((timeex*math.pi)/5)*3000,0,400)
 		surface.SetDrawColor(Color(col.r-100,col.g-100,col.b-100,100))
 		surface.DrawRect((ScrW()-pos)-2,(ScrH()/2)-37,404,74)
 		surface.SetDrawColor(Color(col.r,col.g,col.b,100))
@@ -122,7 +122,7 @@ hook.Add("HUDPaint","CH_roundscreenelements",function()-- what the fuck am i sup
 		surface.DrawPoly(notifp)
 		surface.DrawPoly(notifp2)
 
-		wide,tall = surface.GetTextSize("AAA")
+		tall = 50
 
 
 		if not stop then
