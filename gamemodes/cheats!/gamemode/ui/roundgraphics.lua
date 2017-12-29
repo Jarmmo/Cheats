@@ -67,12 +67,14 @@ end)
 hook.Add("GameStop","stop",function()
 	hook.Remove("HUDPaint","CHRoundWinNotif")
 	hook.Remove("HUDPaint","CHRoundLossNotif")
+	hook.Remove("HUDPaint","CHRoundTieNotif")
 	no = true
 end)
 
 hook.Add("GameWin","stop",function()
 	hook.Remove("HUDPaint","CHRoundWinNotif")
 	hook.Remove("HUDPaint","CHRoundLossNotif")
+	hook.Remove("HUDPaint","CHRoundTieNotif")
 	no = true
 end)
 
@@ -81,6 +83,7 @@ hook.Add("RoundStart","start",function(red,blue)
 	stop = true
 	hook.Remove("HUDPaint","CHRoundWinNotif")
 	hook.Remove("HUDPaint","CHRoundLossNotif")
+	hook.Remove("HUDPaint","CHRoundTieNotif")
 end)
 
 hook.Add("HUDPaint","CH_roundscreenelements",function()-- what the fuck am i supposed to name this shit
@@ -161,5 +164,18 @@ hook.Add("RoundLoss","rloss",function()
 
 		draw.SimpleText("Defeat!","NFont1",(ScrW()/2)+2,(ScrH()/5)+52,Color(0,0,0,(SysTime()-timeex)*1000),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 		draw.SimpleText("Defeat!","NFont1",(ScrW()/2),(ScrH()/5)+50,Color(255,0,0,(SysTime()-timeex)*1000),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+	end)
+end)
+
+hook.Add("RoundTie","rtie",function()
+	local timeex = SysTime()
+	hook.Add("HUDPaint","CHRoundTieNotif",function()
+		surface.SetDrawColor(Color(100,100,100,math.Clamp((SysTime()-timeex)*1000,0,100)))
+		surface.DrawRect(0,ScrH()/5-math.Clamp((SysTime()-timeex)*100,0,10),ScrW(),math.Clamp(((SysTime()-timeex)*200)+100,100,120))
+		surface.SetDrawColor(Color(100,100,100,math.Clamp((SysTime()-timeex)*500,0,250)))
+		surface.DrawRect(0,ScrH()/5,ScrW(),100)
+
+		draw.SimpleText("Tie!","NFont1",(ScrW()/2)+2,(ScrH()/5)+52,Color(0,0,0,(SysTime()-timeex)*1000),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+		draw.SimpleText("Tie!","NFont1",(ScrW()/2),(ScrH()/5)+50,Color(255,255,255,(SysTime()-timeex)*1000),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	end)
 end)

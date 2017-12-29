@@ -1,18 +1,22 @@
+function CHSpectate(ply)
+	local ateam = team.GetPlayers(ply:Team())
+	for k,v in pairs(ateam)do
+		if(!v:Alive())then
+			table.remove(ateam,k)
+		end
+	end
+	if(table.Count(ateam) > 0)then
+		ply:SendLua("hook.Call('CHDeathr',GM)")
+		ply:Spectate(OBS_MODE_IN_EYE)
+		ply:SpectateEntity(ateam[1])
+		ply.SpecTarget = 1
+	end
+end
+
 hook.Add("PlayerDeath","CHspecdeath",function(ply)
 	if(ply:Team() != 0 and !(GetGlobalBool("Deathmatch") and !GetGlobalBool("Lobby")))then
 		timer.Simple(3,function()
-			ply:SendLua("hook.Call('CHDeathr',GM)")
-			local ateam = team.GetPlayers(ply:Team())
-			for k,v in pairs(ateam)do
-				if(!v:Alive())then
-					table.remove(ateam,k)
-				end
-			end
-			if(table.Count(ateam) > 0)then
-				ply:Spectate(OBS_MODE_IN_EYE)
-				ply:SpectateEntity(ateam[1])
-				ply.SpecTarget = 1
-			end
+			CHSpectate(ply)
 		end)
 	end
 end)

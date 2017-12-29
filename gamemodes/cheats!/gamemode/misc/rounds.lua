@@ -1,6 +1,6 @@
 local function defaults()
-	LobbyTimer = 10
-	RoundDuration = 300
+	LobbyTimer = 5
+	RoundDuration = 5
 	RoundEndTime = 5
 	RoundCount = 0
 	RoundLimit = 5
@@ -32,17 +32,17 @@ function GameStop()
 		end
 	end
 end
+GameStop()
 
 function RoundStart()
 	teamf.ScrambleDM()
 	SetGlobalBool("Lobby",false)
 
-	RoundMsg("A round has started!")
-
 	for k,v in pairs(player.GetAll())do
 		if(v:Team() == 1 or v:Team() == 2)then
 			v:UnSpectate()
 			v:Spawn()
+			hook.Call("PlayerLoadout", GAMEMODE, v)
 			v:SendLua("hook.Run('RoundStart',"..RoundScore.red..","..RoundScore.blue..")")
 		end
 	end
@@ -65,12 +65,10 @@ function RoundStart()
 
 		if(!ba)then
 			timer.Remove("ROUNDTIMER")
-			RoundMsg("Red wins!")
 			RoundScore.red = RoundScore.red+1
 			RoundEnd(1)
 		elseif(!ra)then
 			timer.Remove("ROUNDTIMER")
-			RoundMsg("Blue wins!")
 			RoundScore.blue = RoundScore.blue+1
 			RoundEnd(2)
 		end
@@ -106,10 +104,14 @@ function RoundEnd(winner)
 		for k,v in pairs(team.GetPlayers(loser))do--- ||  |  |_
 			v:SendLua("hook.Call('RoundLoss')")------  hehexd
 		end
+	else
+		for k,v in pairs(player.GetAll())do
+			v:SendLua("hook.Call('RoundTie')")
+		end
 	end
 	hook.Remove("Think","CHRoundThink")
 	RoundCount = RoundCount+1
-	if(RoundCount >= RoundLimit)then
+	if(RoundCount >= RoundLimit and (RoundScore.red != RoundScore.blue))then
 		GameWin()	
 	else
 		timer.Create("ROUNDENDTIMER",RoundEndTime,1,RoundStart)
@@ -124,7 +126,6 @@ end
 function GameWin()
 	hook.Remove("Think","CHRoundThink")
 	defaults()
-	RoundCount = 0
 	SetGlobalBool("Deathmatch",true)
 	timer.Create("ROUNDENDTIMER",RoundEndTime,1,function()
 		for k,v in pairs(player.GetAll())do

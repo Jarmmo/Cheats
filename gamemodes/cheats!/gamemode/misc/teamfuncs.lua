@@ -1,6 +1,5 @@
 teamf = {}
 
-
 teamf.TeamMsg = function(ply,asd,col)
 	ply:SendLua("hook.Call('TeamMsg', GM, '"..asd.."',{r="..col.r..",g="..col.g..",b="..col.b..",a=255} )")
 end
@@ -51,7 +50,12 @@ teamf.SetTeam = function(ply,t)
 				else
 					teamf.TeamMsg(ply,"Team set to Red",team.GetColor(t))
 					ply:SetTeam(t)
-					ply:Spawn()
+					if(!(GetGlobalBool("Deathmatch") and !GetGlobalBool("Lobby")))then
+						ply:KillSilent()
+						CHSpectate(ply)
+					else
+						ply:Spawn()
+					end
 				end
 			end
 		elseif(t == 2)then
@@ -63,7 +67,11 @@ teamf.SetTeam = function(ply,t)
 				else
 					teamf.TeamMsg(ply,"Team set to Blue",team.GetColor(t))
 					ply:SetTeam(t)
-					ply:Spawn()
+					if(ply:Team() != 0 and !(GetGlobalBool("Deathmatch") and !GetGlobalBool("Lobby")))then
+						CHSpectate(ply)
+					else
+						ply:Spawn()
+					end
 				end
 			end
 		else

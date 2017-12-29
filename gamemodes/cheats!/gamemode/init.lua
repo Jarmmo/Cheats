@@ -58,6 +58,7 @@ function GM:PlayerDeath(ply,ent,attacker)
 end
 
 function GM:PlayerSpawn(ply)
+	ply.SpecTarget = 1
 	ply:SendLua("hook.Call('CHDeathr',GM)")
 	if(ply:Team() != 0)then
 		ply:UnSpectate()
