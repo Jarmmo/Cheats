@@ -10,8 +10,7 @@ include("misc/sh_playerdeath.lua")
 include("ui/spawneffect.lua")
 include("ui/targetid.lua")
 include("ui/killnotif.lua")
-
-hook.Remove("CreateMove","AIMBOT")
+include("ui/deathnotif.lua")
 
 RoundStarted = false
 
@@ -33,5 +32,7 @@ end)
 hook.Add("GameWin","variable",function()
 	RoundStarted = false
 end)
+
+-- ^^^^^^^^ what was the point of these again?
 
 hook.Add("CreateClientsideRagdoll","begoneTHOT",function(entit,rag) rag:SetSaveValue( "m_bFadingOut", true ) end)

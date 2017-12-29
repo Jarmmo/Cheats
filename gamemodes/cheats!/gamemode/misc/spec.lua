@@ -1,15 +1,14 @@
 hook.Add("PlayerDeath","CHspecdeath",function(ply)
-	if(ply:Team() != 0 and !(GetGlobalBool("Deathmatch") or GetGlobalBool("Lobby")))then
+	if(ply:Team() != 0 and !(GetGlobalBool("Deathmatch") and !GetGlobalBool("Lobby")))then
 		timer.Simple(3,function()
+			ply:SendLua("hook.Call('CHDeathr',GM)")
 			local ateam = team.GetPlayers(ply:Team())
 			for k,v in pairs(ateam)do
 				if(!v:Alive())then
 					table.remove(ateam,k)
 				end
 			end
-			if(table.Count(ateam) <= 0)then
-				ply:Spectate(OBS_MODE_ROAMING)
-			else
+			if(table.Count(ateam) > 0)then
 				ply:Spectate(OBS_MODE_IN_EYE)
 				ply:SpectateEntity(ateam[1])
 				ply.SpecTarget = 1
@@ -19,7 +18,7 @@ hook.Add("PlayerDeath","CHspecdeath",function(ply)
 end)
 
 hook.Add("PlayerButtonDown","CHspecchangetarget",function(ply,butt)
-	if(ply:Team() != 0 and !ply:Alive() and !(GetGlobalBool("Deathmatch") or GetGlobalBool("Lobby")))then
+	if(ply:Team() != 0 and !ply:Alive() and !(GetGlobalBool("Deathmatch") and !GetGlobalBool("Lobby")))then
 		ateam = team.GetPlayers(ply:Team())
 		for k,v in pairs(ateam)do
 			if(!v:Alive())then

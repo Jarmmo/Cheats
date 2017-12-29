@@ -11,6 +11,7 @@ AddCSLuaFile("ui/roundgraphics.lua")
 AddCSLuaFile("ui/spawneffect.lua")
 AddCSLuaFile("ui/targetid.lua")
 AddCSLuaFile("ui/killnotif.lua")
+AddCSLuaFile("ui/deathnotif.lua")
 
 include("misc/spec.lua")
 include("misc/chatcommands.lua")
@@ -20,7 +21,6 @@ include("misc/rounds.lua")
 include("misc/teamfuncs.lua")
 include("misc/sh_playerdeath.lua")
 include("ui/teammenu.lua")
-include("ui/spawneffect.lua")
 
 SetGlobalBool("Deathmatch",true)
 SetGlobalInt("Voteamount",0)
@@ -44,18 +44,21 @@ local PlayerModels = {
 }
 
 function GM:PlayerDeath(ply,ent,attacker)
-	if(ply == attacker)then
-		ply:SendLua("hook.Call('CHDeath',GM,true)")
+	if(ply == attacker or attacker == Entity(0))then
+		ply:SendLua("hook.Call('CHDeath',GM,true)")--suicide
 	else
-		ply:SendLua("hook.Call('CHDeath',GM,'" .. attacker:Name() .. "','"..ent:GetClass().."')")
-	end
+		ply:SendLua("hook.Call('CHDeath',GM,'" .. attacker:Name() .. "','"..ent.PrintName.."')")
 		attacker:SendLua("hook.Call('CHKill',GM,'".. ply:Name() .."')")
-	timer.Simple(3,function() 
-		ply:Spawn()
-	end)
+	end
+	if(GetGlobalBool("Deathmatch") or GetGlobalBool("Lobby"))then
+		timer.Simple(3,function() 
+			ply:Spawn()
+		end)
+	end
 end
 
 function GM:PlayerSpawn(ply)
+	ply:SendLua("hook.Call('CHDeathr',GM)")
 	if(ply:Team() != 0)then
 		ply:UnSpectate()
 		--ply:SetTeam(math.random(1, 2))

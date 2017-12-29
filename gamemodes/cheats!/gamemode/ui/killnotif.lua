@@ -9,13 +9,13 @@ local function CreateFont()
 end
 CreateFont()
 
-hook.Add("CHKill","CHDeathIndidator",function(ply)
+hook.Add("CHKill","CHKillIndidator",function(ply)
 	local col = team.GetColor(LocalPlayer():Team())
 	local r = col.r
 	local g = col.g
 	local b = col.b
 	local time = SysTime()
-	hook.Add("HUDPaint","CHDeathIndicator",function()
+	hook.Add("HUDPaint","CHKillIndicator",function()
 		local timeex = SysTime()-time
 		r = r+1
 		g = g+1
@@ -30,8 +30,8 @@ hook.Add("CHKill","CHDeathIndidator",function(ply)
 		draw.SimpleText("Killed "..ply,"KNOTIF",(ScrW()/2)+math.Rand(-6,6),((ScrH()/4)*3)+math.Rand(-6,6),Color(timeex*510,0,0,255-timeex*250),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 		draw.SimpleText("Killed "..ply,"KNOTIF",(ScrW()/2),((ScrH()/4)*3),Color(255,timeex*510,timeex*510,255-timeex*300),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 	end)
-	timer.Remove("DeathTimer")
-	timer.Create("DeathTimer",3,1,function()
-		hook.Remove("HUDPaint","CHDeathIndicator")
+	timer.Remove("KillTimer")
+	timer.Create("KillTimer",3,1,function()
+		hook.Remove("HUDPaint","CHKillIndicator")
 	end)
 end)
