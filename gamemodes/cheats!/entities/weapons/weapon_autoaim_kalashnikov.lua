@@ -102,7 +102,7 @@ local function CheckLOS(target)
 	local trace = util.TraceLine({
 		start = pos,
 		endpos = LocalPlayer():GetShootPos(),
-		filter = {LocalPlayer(),target},
+		filter = player.GetAll(),
 		ignoreworld = false
 	})
 
