@@ -111,63 +111,85 @@ local function CheckLOS(target)
 	return true
 end
 
-local function CheckFOV(target,PixelDifference)
-	local W,H = ScrW()/2,ScrH()/2
-	local ScreenPos = target:GetBonePosition(target:LookupBone(targetbone)):ToScreen()
-	local ScreenCompare = (target:GetBonePosition(target:LookupBone(targetbone))+Vector(0,0,1)):ToScreen()
-	local Dist = Vector(W,H,0):Distance(Vector(ScreenPos.x,ScreenPos.y,0))
-	local pd = (math.Distance(ScreenPos.x,ScreenPos.y,ScreenCompare.x,ScreenCompare.y)*PixelDifference)/2
-	if Dist < pd then 
-		return true
-	end
-	return false
-end
+local function GetTarget()
+	local target = false
+	for k,v in pairs(player.GetAll())do
+		local pos = v:GetBonePosition(v:LookupBone(targetbone))
+		local trace = util.TraceLine({
+			start = pos,
+			endpos = LocalPlayer():GetShootPos(),
+			filter = {LocalPlayer(),v},
+			ignoreworld = false
+		})
 
-local function FindNearestToCrosshair()
-	local nearestEnt
-	local LowestDist = 999
-	local W,H = ScrW()/2,ScrH()/2
-	for k,v in pairs(ents.GetAll())do
-		if ((v:IsPlayer() and v:Alive() and v != LocalPlayer()) or v:IsNPC() and CheckLOS(target))then
-			if(v:Team() == 3 or (v:Team() != LocalPlayer():Team()))then
-				local ScreenPos = v:GetBonePosition(v:LookupBone(targetbone)):ToScreen()
-				local Dist = Vector(W,H,0):Distance(Vector(ScreenPos.x,ScreenPos.y,0))
-				if (Dist < LowestDist) then
-					LowestDist = Dist
-					nearestEnt = v
+		if(trace.Fraction == 1)then
+			if(v:Alive() and v != LocalPlayer() and (v:Team() == 3 or (v:Team() != LocalPlayer():Team())))then
+				--local ScreenPos = v:GetBonePosition(v:LookupBone(targetbone)):ToScreen()
+				--local Dist = Vector(W,H,0):Distance(Vector(ScreenPos.x,ScreenPos.y,0))
+
+				local lpang = LocalPlayer():EyeAngles()
+				local ang = (v:GetBonePosition(v:LookupBone(targetbone)) - LocalPlayer():EyePos()):Angle()
+				local ady = math.abs(math.NormalizeAngle(lpang.y - ang.y))
+				local adp = math.abs(math.NormalizeAngle(lpang.p - ang.p ))
+				if not(ady > 10 or adp > 10) then
+					target = v
 				end
 			end
 		end
 	end
-	return nearestEnt
+	return target
 end
 
 local SnapAim = false
-local PlaySound = true
+local Targeting = false
+local target = false
+local PlaySound = false
+local AllowSound = true
 
-hook.Add("HUDPaint","AIMBOT",function()
-	if (input.IsButtonDown(MOUSE_RIGHT))then
+hook.Add("Think","AIMBOT",function()
+
+	local wep = LocalPlayer():GetActiveWeapon()
+	if(IsValid(wep) and wep:GetClass() != "weapon_autoaim_kalashnikov") then return end
+
+	if(!Targeting)then
+		target = GetTarget()
+	end
+
+	if(target == false or !target:Alive())then
+		Targeting = false
+		AllowSound = true
+	else
+		if(AllowSound)then
+			PlaySound = true
+			AllowSound = false
+		end
+		Targeting = true
+	end
+
+	if(input.IsButtonDown(MOUSE_RIGHT))then
 		SnapAim = true
-	elseif (!input.IsButtonDown(MOUSE_RIGHT))then
+	else
+		AllowSound = true
 		SnapAim = false
-		PlaySound = true
+		Targeting = false
+		target = false
+	end
+
+	if(target != false and !CheckLOS(target))then
+		target = false
 	end
 
 	if (SnapAim) then
-		local wep = LocalPlayer():GetActiveWeapon()
-		if(IsValid(wep) and wep:GetClass() == "weapon_autoaim_kalashnikov") then
-			local ply = LocalPlayer()
+		local ply = LocalPlayer()
 
-			local target = FindNearestToCrosshair()
+		if(PlaySound)then
+			surface.PlaySound("ui/buttonclick.wav")
+			PlaySound = false
+		end
 
-			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or (target:IsNPC() and target:Health() >= 0)) and target:Team() != 0 and (CheckFOV(target,200) and CheckLOS(target))) then
-				if (PlaySound) then
-					surface.PlaySound("ui/buttonclick.wav")
-					PlaySound = false
-				end
-				local targetbonepos = target:GetBonePosition(target:LookupBone(targetbone))
-				LocalPlayer():SetEyeAngles((targetbonepos - ply:EyePos()):Angle())
-			end
+		if((target != false and target:Alive()))then
+			local targetbonepos = target:GetBonePosition(target:LookupBone(targetbone))
+			LocalPlayer():SetEyeAngles((targetbonepos - ply:EyePos()):Angle())
 		end
 	end
 end)
@@ -193,8 +215,8 @@ hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
 	local col = team.GetColor(LocalPlayer():Team())
 	local wep = LocalPlayer():GetActiveWeapon()
 	if(IsValid(wep) and wep:GetClass() == "weapon_autoaim_kalashnikov") then
-		for k,target in pairs(ents.GetAll())do
-			if (IsValid(target)and((target:IsPlayer()and target:Alive()) or (target:IsNPC() and target:Health() > 0)) and target:Team() != 0 and target != LocalPlayer() and CheckLOS(target)) then
+		for k,target in pairs(player.GetAll())do
+			if (IsValid(target)and target:Alive() and target:Team() != 0 and target != LocalPlayer() and CheckLOS(target)) then
 				if(target:Team() == 3 or (target:Team() != LocalPlayer():Team()))then
 					local targetipos = target:GetBonePosition(target:LookupBone(targetbone))
 					local targetcompare = (targetipos+Vector(0,0,1)):ToScreen()
@@ -208,10 +230,10 @@ hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
 					end
 				end
 
-				local atarget = FindNearestToCrosshair()
+				local atarget = GetTarget()
 				if (IsValid(atarget)and(atarget:IsPlayer() or atarget:IsNPC()))then
 					local atargetipos = atarget:GetBonePosition(atarget:LookupBone(targetbone)):ToScreen()
-					if(CheckFOV(atarget,200)and CheckLOS(atarget)and !SnapAim)then
+					if(CheckLOS(atarget)and !SnapAim)then
 
 						local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
 

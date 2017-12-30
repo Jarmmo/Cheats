@@ -25,8 +25,8 @@ hook.Add("CHDeath","CHDeathIndidator",function(ply,weapon)
 			draw.SimpleText("You killed yourself","DNOTIF",ScrW()/2,math.Clamp(-98+timeex*500,-98,0)+35,Color(0,0,0,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
 			draw.SimpleText("You killed yourself","DNOTIF",(ScrW()/2)-2,math.Clamp(-98+timeex*500,-98,0)+33,Color(255,255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
 		else
-			draw.SimpleText(ply.." killed you with "..weapon,"DNOTIF",ScrW()/2,math.Clamp(-98+timeex*500,-98,0)+35,Color(0,0,0,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
-			draw.SimpleText(ply.." killed you with "..weapon,"DNOTIF",(ScrW()/2)-2,math.Clamp(-98+timeex*500,-98,0)+33,Color(255,255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+			draw.SimpleText(ply.." killed you with their "..weapon,"DNOTIF",ScrW()/2,math.Clamp(-98+timeex*500,-98,0)+35,Color(0,0,0,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
+			draw.SimpleText(ply.." killed you with their "..weapon,"DNOTIF",(ScrW()/2)-2,math.Clamp(-98+timeex*500,-98,0)+33,Color(255,255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_TOP)
 		end
 
 		if(GetGlobalBool("Deathmatch") or GetGlobalBool("Lobby"))then

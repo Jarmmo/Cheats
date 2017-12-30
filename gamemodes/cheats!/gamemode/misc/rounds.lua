@@ -32,7 +32,7 @@ function GameStop()
 		end
 	end
 end
-GameStop()
+--GameStop()
 
 function RoundStart()
 	teamf.ScrambleDM()

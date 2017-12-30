@@ -44,12 +44,6 @@ local PlayerModels = {
 }
 
 function GM:PlayerDeath(ply,ent,attacker)
-	if(ply == attacker or attacker == Entity(0))then
-		ply:SendLua("hook.Call('CHDeath',GM,true)")--suicide
-	else
-		ply:SendLua("hook.Call('CHDeath',GM,'" .. attacker:Name() .. "','"..ent.PrintName.."')")
-		attacker:SendLua("hook.Call('CHKill',GM,'".. ply:Name() .."')")
-	end
 	if(GetGlobalBool("Deathmatch") or GetGlobalBool("Lobby"))then
 		timer.Simple(3,function() 
 			ply:Spawn()
@@ -65,7 +59,7 @@ function GM:PlayerSpawn(ply)
 		--ply:SetTeam(math.random(1, 2))
 		ply:GiveAmmo(99999999, "SMG1", true)
 		hook.Call( "PlayerLoadout", GAMEMODE, ply )
-	elseif(ply:Team() == 0)then
+	else
 		ply:Spectate(OBS_MODE_ROAMING)
 		ply:GodEnable()
 	end
@@ -94,8 +88,13 @@ function GM:PlayerLoadout(ply)
 end
 
 function GM:PlayerInitialSpawn( ply )
-	ply:SetTeam(0)
-	ply:SetModel(table.Random(PlayerModels))
+	if(ply:IsBot())then
+		ply:SetTeam(3)
+		ply:SetModel(table.Random(PlayerModels))
+	else
+		ply:SetTeam(0)
+		ply:SetModel(table.Random(PlayerModels))
+	end
 end
 
 function GM:CanPlayerSuicide(ply)

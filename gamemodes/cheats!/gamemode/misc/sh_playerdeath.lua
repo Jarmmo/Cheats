@@ -1,15 +1,35 @@
 if SERVER then
-  util.AddNetworkString("PlayerDeath")
-  
-  function GM:PlayerDeath( victim, inflictor, attacker )
-    net.Start("PlayerDeath")
-    net.WriteTable({ victim, inflictor, attacker })
-    net.Broadcast()
-  end
-else
-  net.Receive("PlayerDeath", function()
-    local args = net.ReadTable()
-    
-    hook.Call("PlayerDeath", GM, args[1], args[2], args[3])
-  end)
+	util.AddNetworkString("PlayerDeath")
+	util.AddNetworkString("PlayerKill")
+	hook.Add("PlayerDeath","CHDeath",function( victim, inflictor, attacker )
+		if(victim == attacker or attacker == Entity(0))then
+			net.Start("PlayerDeath")
+			net.WriteTable({true})
+			net.Send(victim)
+		else
+			net.Start("PlayerDeath")
+			net.WriteTable({ attacker, inflictor })
+			net.Send(victim)
+		end
+
+		net.Start("PlayerKill")
+		net.WriteTable({victim})
+		net.Send(attacker)
+
+	end)
+end
+
+if CLIENT then
+	net.Receive("PlayerDeath", function()
+		local args = net.ReadTable()
+		if(args[1] == true)then
+			hook.Call("CHDeath", GAMEMODE, true)
+		else
+			hook.Call("CHDeath", GAMEMODE, args[1]:Name(), args[2].PrintName)
+		end
+	end)
+	net.Receive("PlayerKill", function()
+		local args = net.ReadTable()
+		hook.Call("CHKill",GM,args[1]:Name())
+	end)
 end
