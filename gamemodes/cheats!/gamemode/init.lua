@@ -152,7 +152,7 @@ hook.Add("PlayerDisconnected","VoteCheck",function(ply)
 		SetGlobalInt("Voteamount",GetGlobalInt("Voteamount")-1)
 	end
 	if(100*GetGlobalInt("Voteamount")/(table.Count(player.GetAll())-1) > 75)then
-		RoundStart()
+		GameLobby()
 		SetGlobalBool("Deathmatch",false)
 		SetGlobalInt("Voteamount",0)
 		for k,v in pairs(player.GetAll())do
