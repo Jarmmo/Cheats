@@ -1,6 +1,6 @@
 local function defaults()
-	LobbyTimer = 5
-	RoundDuration = 5
+	LobbyTimer = 30
+	RoundDuration = 300
 	RoundEndTime = 5
 	RoundCount = 0
 	RoundLimit = 5

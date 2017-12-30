@@ -42,6 +42,7 @@ function SWEP:PrimaryAttack()
 	if (self.Weapon:Clip1() <= 0) then
 		self:EmitSound( "Weapon_Pistol.Empty" )
 		self:SetNextPrimaryFire( CurTime() + 0.2 )
+		self:Reload()
 		return
 	end
 
@@ -147,8 +148,6 @@ local PlaySound = false
 local AllowSound = true
 
 hook.Add("Think","AIMBOT",function()
-
-	chat.AddText(tostring(Targeting))
 
 	local wep = LocalPlayer():GetActiveWeapon()
 	if(IsValid(wep) and wep:GetClass() != "weapon_autoaim_kalashnikov") then return end
