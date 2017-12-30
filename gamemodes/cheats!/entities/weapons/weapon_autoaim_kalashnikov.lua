@@ -148,6 +148,8 @@ local AllowSound = true
 
 hook.Add("Think","AIMBOT",function()
 
+	chat.AddText(tostring(Targeting))
+
 	local wep = LocalPlayer():GetActiveWeapon()
 	if(IsValid(wep) and wep:GetClass() != "weapon_autoaim_kalashnikov") then return end
 
@@ -164,6 +166,10 @@ hook.Add("Think","AIMBOT",function()
 			AllowSound = false
 		end
 		Targeting = true
+	end
+
+	if(!Targeting)then
+		PlaySound = false
 	end
 
 	if(input.IsButtonDown(MOUSE_RIGHT))then
