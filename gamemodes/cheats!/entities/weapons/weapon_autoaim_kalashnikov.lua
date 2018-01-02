@@ -77,9 +77,13 @@ function SWEP:PrimaryAttack()
 	ply:LagCompensation(false)
 
 	if (CLIENT and !LocalPlayer():ShouldDrawLocalPlayer())then
-		ParticleEffectAttach("akmflashmain",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1)--viewmodel only
+		ParticleEffectAttach("CH_akmflashfp",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1) --viewmodel only
+		timer.Simple(0,function()
+			self:GetOwner():GetViewModel():StopParticlesNamed("CH_muzzlesmoke")
+			ParticleEffectAttach("CH_muzzlesmoke",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1)
+		end)
 	else
-		ParticleEffectAttach("akmflashmain",PATTACH_POINT_FOLLOW,self,1)--world model only
+		ParticleEffectAttach("CH_akmflashtp",PATTACH_POINT_FOLLOW,self,1) --world model only
 	end
 end
 
@@ -99,7 +103,6 @@ function SWEP:FireAnimationEvent( pos, ang, event, options ) -- disable default 
 end
 
 function SWEP:Think()
-	--local vel = self:GetOwner():GetVelocity():Length()/15
 	if(self:GetOwner():Crouching())then
 		self.Primary.Spread = 0.02
 	else

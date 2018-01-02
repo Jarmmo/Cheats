@@ -89,9 +89,10 @@ function SWEP:PrimaryAttack()
 	ply:LagCompensation(false)
 
 	if (CLIENT and !LocalPlayer():ShouldDrawLocalPlayer())then
-		ParticleEffectAttach("akmflashmain",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1)--viewmodel only
+		ParticleEffectAttach("CH_akmflashfp",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1) --viewmodel only
+		ParticleEffectAttach("CH_muzzlesmoke",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1)
 	else
-		ParticleEffectAttach("akmflashmain",PATTACH_POINT_FOLLOW,self,1)--world model only
+		ParticleEffectAttach("CH_akmflashtp",PATTACH_POINT_FOLLOW,self,1) --world model only
 	end
 end
 
