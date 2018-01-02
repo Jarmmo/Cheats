@@ -5,7 +5,7 @@ net.Receive("anticheat", function(len,ply)
 	if (!GetConVar("sv_allowcslua"):GetBool() and bool == true) then
 		local msg = {
 			"This is not HVH. You do not need to bring your own cheats.",
-			"Cheats gamemode doesn't mean you can use here your cheats.",
+			"Cheats gamemode doesn't mean you can use your cheats here.",
 			"Kicked for enabling other cheats.",
 			"Look Stanley, I think perhaps we've gotten off on the wrong foot here."
 		}
