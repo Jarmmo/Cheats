@@ -12,6 +12,7 @@ include("ui/spawneffect.lua")
 include("ui/targetid.lua")
 include("ui/killnotif.lua")
 include("ui/deathnotif.lua")
+include("misc/particles.lua")
 
 RoundStarted = false
 

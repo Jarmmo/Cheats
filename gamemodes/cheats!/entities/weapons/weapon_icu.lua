@@ -77,7 +77,6 @@ function SWEP:PrimaryAttack()
 	}
 
 	self:FireBullets(Bullet)
-	self:ShootEffects()
 
 	self:EmitSound(shoot)
 	self.BaseClass.ShootEffects(self)
@@ -89,6 +88,22 @@ function SWEP:PrimaryAttack()
 
 	ply:LagCompensation(false)
 
+	if (CLIENT and !LocalPlayer():ShouldDrawLocalPlayer())then
+		ParticleEffectAttach("akmflashmain",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1)--viewmodel only
+	else
+		ParticleEffectAttach("akmflashmain",PATTACH_POINT_FOLLOW,self,1)--world model only
+	end
+end
+
+function SWEP:FireAnimationEvent( pos, ang, event, options ) -- disable default muzzleflashes
+	if ( event == 5003 ) then return true end
+	if ( event == 5013 ) then return true end
+	if ( event == 5023 ) then return true end
+	if ( event == 5033 ) then return true end
+	if ( event == 5001 ) then return true end
+	if ( event == 5011 ) then return true end
+	if ( event == 5021 ) then return true end
+	if ( event == 5031 ) then return true end
 end
 
 function SWEP:AdjustMouseSensitivity()

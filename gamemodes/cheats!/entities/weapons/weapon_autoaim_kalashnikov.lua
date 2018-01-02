@@ -17,7 +17,8 @@ SWEP.SlotPos = 1
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
 SWEP.m_WeaponDeploySpeed = 5
-SWEP.CSMuzzleFlashes = true
+SWEP.CSMuzzleFlashes = false
+SWEP.ShouldDropOnDie = false
 
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.DefaultClip = 30
@@ -30,8 +31,6 @@ SWEP.Secondary.DefaultClip = -1
 SWEP.Secondary.Ammo = "none"
 SWEP.Secondary.Automatic = true
 
-SWEP.ShouldDropOnDie = false
-
 local shoot = Sound("weapons/ak47/ak47-1.wav")
 
 function SWEP:Initialize()
@@ -42,6 +41,7 @@ function SWEP:PrimaryAttack()
 	if (self.Weapon:Clip1() <= 0) then
 		self:EmitSound( "Weapon_Pistol.Empty" )
 		self:SetNextPrimaryFire( CurTime() + 0.2 )
+		self:GetOwner():SetAnimation(PLAYER_RELOAD)
 		self:Reload()
 		return
 	end
@@ -65,7 +65,6 @@ function SWEP:PrimaryAttack()
 	Bullet.HullSize = 1
 
 	self:FireBullets(Bullet)
-	self:ShootEffects()
 
 	self:EmitSound(shoot)
 	self.BaseClass.ShootEffects(self)
@@ -76,12 +75,28 @@ function SWEP:PrimaryAttack()
 	ply:SetAmmo(999,"SMG1")
 
 	ply:LagCompensation(false)
+
+	if (CLIENT and !LocalPlayer():ShouldDrawLocalPlayer())then
+		ParticleEffectAttach("akmflashmain",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1)--viewmodel only
+	else
+		ParticleEffectAttach("akmflashmain",PATTACH_POINT_FOLLOW,self,1)--world model only
+	end
 end
 
 function SWEP:CanSecondaryAttack()
 	return false
 end
 
+function SWEP:FireAnimationEvent( pos, ang, event, options ) -- disable default muzzleflashes
+	if ( event == 5003 ) then return true end
+	if ( event == 5013 ) then return true end
+	if ( event == 5023 ) then return true end
+	if ( event == 5033 ) then return true end
+	if ( event == 5001 ) then return true end
+	if ( event == 5011 ) then return true end
+	if ( event == 5021 ) then return true end
+	if ( event == 5031 ) then return true end
+end
 
 function SWEP:Think()
 	--local vel = self:GetOwner():GetVelocity():Length()/15
@@ -132,7 +147,7 @@ local function GetTarget()
 				local ang = (v:GetBonePosition(v:LookupBone(targetbone)) - LocalPlayer():EyePos()):Angle()
 				local ady = math.abs(math.NormalizeAngle(lpang.y - ang.y))
 				local adp = math.abs(math.NormalizeAngle(lpang.p - ang.p ))
-				if not(ady > 10 or adp > 10) then
+				if not(ady > 15 or adp > 15) then
 					target = v
 				end
 			end
