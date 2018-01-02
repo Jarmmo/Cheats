@@ -1,9 +1,8 @@
 util.AddNetworkString("anticheat")
 
-net.Recieve("anticheat", function()
-	local ply = net.ReadEntity()
+net.Receive("anticheat", function(len,ply)
 	local bool = net.ReadBool()
-	if bool == true then
-		ply:Kick("You really need more cheats? I already supply you with some. What more do you ask?")
+	if (!GetConVar("sv_allowcslua"):GetBool() and bool == true) then
+		ply:Kick("This is not hvh. You do not need to bring your own cheats")
 	end
 end)
