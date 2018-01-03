@@ -2,7 +2,7 @@
 {
 	"base"		"base"
 	"title"		"Cheats!"
-	"maps"		"^de_|^cs_|^as_"
+	"maps"		"^de_|^cs_|^as_|^ch_"
 	"menusystem"	"1"
 	"workshopid"	""
 }

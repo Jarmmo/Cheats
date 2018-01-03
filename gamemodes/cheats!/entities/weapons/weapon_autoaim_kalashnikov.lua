@@ -74,17 +74,22 @@ function SWEP:PrimaryAttack()
 
 	ply:SetAmmo(999,"SMG1")
 
-	ply:LagCompensation(false)
-
 	if (CLIENT and !LocalPlayer():ShouldDrawLocalPlayer())then
-		ParticleEffectAttach("CH_akmflashfp",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1) --viewmodel only
-		timer.Simple(0,function()
-			self:GetOwner():GetViewModel():StopParticlesNamed("CH_muzzlesmoke")
-			ParticleEffectAttach("CH_muzzlesmoke",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1)
-		end)
+		if(IsValid(self:GetOwner():GetViewModel()))then
+			ParticleEffectAttach("CH_akmflashfp",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1) --viewmodel only
+		end
+		if(IsValid(self:GetOwner():GetViewModel()))then
+			timer.Simple(0,function()
+				if(IsValid(self:GetOwner():GetViewModel()))then
+					self:GetOwner():GetViewModel():StopParticlesNamed("CH_muzzlesmoke")
+					ParticleEffectAttach("CH_muzzlesmoke",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1)
+				end
+			end)
+		end
 	else
 		ParticleEffectAttach("CH_akmflashtp",PATTACH_POINT_FOLLOW,self,1) --world model only
 	end
+	ply:LagCompensation(false)
 end
 
 function SWEP:CanSecondaryAttack()
