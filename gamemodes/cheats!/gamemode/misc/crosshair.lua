@@ -13,6 +13,17 @@ function draw.Circle( x, y, radius, seg )
 	surface.DrawPoly( cir )
 end
 
+local function CreateFont()
+	surface.CreateFont( "CHAIRD", {
+		font = "Roboto Cn",
+		extended = true,
+		size = 14,
+		weight = 600,
+		antialias = true
+	})
+end
+CreateFont()
+
 function F_Crosshair()
 	local wep = LocalPlayer():GetActiveWeapon()
 	local CPos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
@@ -20,13 +31,13 @@ function F_Crosshair()
 	if (wep.DrawCustomCrosshair == true and LocalPlayer():Alive())then
 		local col = team.GetColor(LocalPlayer():Team())
 		if(wep.Scoped == true)then
-			local vel = LocalPlayer():GetVelocity():Length()/7
-			surface.SetDrawColor(col.r,col.g,col.b,50)
-			surface.DrawCircle(CPos.x,CPos.y,math.Clamp((vel)-5,0,9999),20,20,20,200-(vel/50)*255)
-			surface.DrawCircle(CPos.x,CPos.y,math.Clamp((vel)-5,0,9999)-0.5,20,20,20,200-(vel/50)*255)
+			surface.DrawCircle(CPos.x,CPos.y,math.Clamp((LocalPlayer():GetActiveWeapon().Primary.Spread+0.05),0,1)*115+2,col.r,col.g,col.b,50-((LocalPlayer():GetActiveWeapon().Primary.Spread*50)/50)*100)
+			surface.DrawCircle(CPos.x,CPos.y,(math.Clamp((LocalPlayer():GetActiveWeapon().Primary.Spread+0.05),0,1)*115)+1,0,0,0,50-((LocalPlayer():GetActiveWeapon().Primary.Spread*50)/50)*100)
+			draw.SimpleText(math.ceil(LocalPlayer():GetActiveWeapon().Primary.Damage),"CHAIRD",(ScrW()/2)+2,(ScrH()/2)+22,Color(0,0,0,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+			draw.SimpleText(math.ceil(LocalPlayer():GetActiveWeapon().Primary.Damage),"CHAIRD",(ScrW()/2),(ScrH()/2)+20,Color(255,255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 		end
 		surface.SetDrawColor(0,0,0,200)
-		draw.Circle(CPos.x,CPos.y,4.2,8)
+		draw.Circle(CPos.x,CPos.y,4.5,8)
 		surface.SetDrawColor(col.r,col.g,col.b,255)
 		draw.Circle(CPos.x,CPos.y,3.5,8)
 	end

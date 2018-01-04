@@ -16,6 +16,10 @@ include("misc/particles.lua")
 
 RoundStarted = false
 
+function GM:ScalePlayerDamage( ply, hitgroup, dmginfo )
+	return false
+end
+
 hook.Add("HUDPaint","SpawnSelectTeam",function()
 	if(LocalPlayer():Team() == 0)then
 		TeamMenu()

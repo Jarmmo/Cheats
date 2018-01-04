@@ -17,9 +17,8 @@ SWEP.SlotPos = 1
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
 SWEP.m_WeaponDeploySpeed = 5
-SWEP.CSMuzzleFlashes = true
+SWEP.CSMuzzleFlashes = false
 SWEP.Scoped = false
-SWEP.CanScope = true
 SWEP.Sens = 1
 SWEP.ShouldDropOnDie = false
 
@@ -27,16 +26,19 @@ SWEP.Primary.ClipSize = 7
 SWEP.Primary.DefaultClip = 7
 SWEP.Primary.Ammo = "SMG1"
 SWEP.Primary.Automatic = true
-SWEP.Primary.Spread = 0.03
+SWEP.Primary.Spread = 0.3
+SWEP.Primary.Damage = 200
 
 SWEP.Secondary.ClipSize = -1
 SWEP.Secondary.DefaultClip = -1
 SWEP.Secondary.Ammo = "none"
-SWEP.Secondary.Automatic = true
+SWEP.Secondary.Automatic = false
 
 SWEP.ShowESP = false
 SWEP.ESPCheck = false
 SWEP.ESPTimer = 0
+
+SWEP.AccTimeex = 0
 
 local shoot = Sound("weapons/awp/awp1.wav")
 
@@ -47,12 +49,11 @@ end
 function SWEP:Deploy()
 	self.ShowESP = false
 	self.ESPCheck = false
-	if (SERVER) then
+	if SERVER then
 		self:GetOwner():EmitSound("npc/sniper/reload1.wav")
 	end
 	self.Sens = 1
 	self.Scoped = false
-	self.CanScope = true
 end
 
 function SWEP:PrimaryAttack()
@@ -68,11 +69,11 @@ function SWEP:PrimaryAttack()
 		Src = ply:GetShootPos(),
 		Dir = ply:GetAimVector(),
 		Spread = Vector(self.Primary.Spread,self.Primary.Spread,0),
-		Tracer = 0,
-		Damage = 200,
+		Tracer = 1,
+		Damage = self.Primary.Damage,
 		AmmoType = self.Primary.Ammo,
 		Attacker = ply,
-		HullSize = 0,
+		HullSize = 1,
 		Force = 10
 	}
 
@@ -88,9 +89,18 @@ function SWEP:PrimaryAttack()
 
 	ply:LagCompensation(false)
 
-	if (CLIENT and !LocalPlayer():ShouldDrawLocalPlayer())then
-		ParticleEffectAttach("CH_akmflashfp",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1) --viewmodel only
-		ParticleEffectAttach("CH_muzzlesmoke",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1)
+if (CLIENT and !LocalPlayer():ShouldDrawLocalPlayer())then
+		if(IsValid(self:GetOwner():GetViewModel()))then
+			ParticleEffectAttach("CH_akmflashfp",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1) --viewmodel only
+		end
+		if(IsValid(self:GetOwner():GetViewModel()))then
+			timer.Simple(0,function()
+				if(IsValid(self:GetOwner():GetViewModel()))then
+					self:GetOwner():GetViewModel():StopParticlesNamed("CH_muzzlesmoke")
+					ParticleEffectAttach("CH_muzzlesmoke",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1)
+				end
+			end)
+		end
 	else
 		ParticleEffectAttach("CH_akmflashtp",PATTACH_POINT_FOLLOW,self,1) --world model only
 	end
@@ -112,20 +122,32 @@ function SWEP:AdjustMouseSensitivity()
 end
 
 function SWEP:SecondaryAttack()
-	if (!self.Scoped and self.CanScope)then
+	if (!self.Scoped and IsFirstTimePredicted())then
 		GAMEMODE:SetPlayerSpeed(self:GetOwner(),100,200)
-		self.Scoped = true
-		self.CanScope = false
-		timer.Simple(0.5,function()
-			self.CanScope = true
+		self.AccTimeex = SysTime()
+		local tag = "CH_ICUspread_"..self:GetOwner():Name()
+		timer.Remove(tag)
+		hook.Add("Think",tag,function()
+			if(!IsValid(self))then return end
+			if CLIENT then
+				self.Primary.Spread = math.Clamp(0.5-(SysTime()-self.AccTimeex),0,0.5)
+				self.Primary.Damage = math.Clamp((SysTime()-self.AccTimeex)*500,0,200)
+			else
+				print(math.Clamp(0.5-(SysTime()-self.AccTimeex)*1.2,0,0.5))
+				self.Primary.Spread = math.Clamp(0.5-(SysTime()-self.AccTimeex)*1.2,0,0.5)
+				self.Primary.Damage = math.Clamp((SysTime()-self.AccTimeex)*700,0,200)
+			end
 		end)
-	elseif(self.Scoped and self.CanScope)then
+		timer.Create(tag,3,1,function()
+			hook.Remove("Think",tag)
+		end)
+		self.Scoped = true
+	elseif(self.Scoped and IsFirstTimePredicted())then
+		self.Primary.Spread = 0.3
+		self.Primary.Damage = 200
 		GAMEMODE:SetPlayerSpeed(self:GetOwner(),200,350)
 		self.Scoped = false
-		self.CanScope = false
-		timer.Simple(0.5,function()
-			self.CanScope = true
-		end)
+		hook.Remove("Think","CH_ICUspread_"..self:GetOwner():Name())
 	end
 end
 
@@ -135,6 +157,8 @@ function SWEP:Reload()
 	self.Scoped = false
 	self.Owner:SetFOV( 0, 0 )
 	self.Sens = 1
+	self.Primary.Spread = 0.3
+	self.Primary.Damage = 500
 end
 
 function SWEP:Holster()
@@ -154,15 +178,13 @@ function SWEP:Think()
 	end
 	local vel = self:GetOwner():GetVelocity():Length()/15
 	if(self.Scoped)then
-		self.Primary.Spread = math.Clamp((vel/200)-0.02,0,9999)
-
 		self.Owner:SetFOV( 20, 0 )
 		self.Sens = 0.2
 	elseif(!self.Scoped)then
-		self.Primary.Spread = (vel/5)+0.3
-
 		self.Owner:SetFOV( 0, 0 )
 		self.Sens = 1
+		self.Primary.Spread = 0.3
+		self.Primary.Damage = 200
 	end
 	return
 end

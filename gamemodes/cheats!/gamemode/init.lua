@@ -49,10 +49,16 @@ local PlayerModels = {
 
 function GM:PlayerDeath(ply,ent,attacker)
 	if(GetGlobalBool("Deathmatch") or GetGlobalBool("Lobby"))then
-		timer.Simple(3,function() 
-			ply:Spawn()
+		timer.Simple(3,function()
+			if(IsValid(ply))then
+				ply:Spawn()
+			end
 		end)
 	end
+end
+
+function GM:ScalePlayerDamage( ply, hitgroup, dmginfo )
+	dmginfo:ScaleDamage(1)
 end
 
 function GM:PlayerSpawn(ply)
@@ -92,6 +98,7 @@ function GM:PlayerLoadout(ply)
 end
 
 function GM:PlayerInitialSpawn( ply )
+	ply.CheatTimer = CurTime()
 	if(ply:IsBot())then
 		ply:SetTeam(3)
 		ply:SetModel(table.Random(PlayerModels))
