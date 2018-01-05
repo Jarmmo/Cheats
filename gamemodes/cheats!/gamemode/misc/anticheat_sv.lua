@@ -16,7 +16,7 @@ net.Receive("anticheat", function(len,ply)
 	end
 end)
 
-timer.Create("CHAntiCheatTimer",15,0,function() -- if a cheat blocks the anticheat net message or something
+timer.Create("CHAntiCheatTimer",30,0,function() -- if a cheat blocks the anticheat net message or something
 	for k,v in pairs(player.GetAll())do
 		if (CurTime()-v.CheatTimer > 10 and !v:IsBot())then
 			v:Kick(table.Random(anticheatmsg))

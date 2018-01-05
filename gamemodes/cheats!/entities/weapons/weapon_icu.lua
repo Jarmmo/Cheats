@@ -42,6 +42,29 @@ SWEP.AccTimeex = 0
 
 local shoot = Sound("weapons/awp/awp1.wav")
 
+function SWEP:ShootTracer(startp,endp)
+if CLIENT then
+	local ply = self:GetOwner()
+	local time = SysTime()
+	local tag = "CH_ICUTRACER_"..ply:SteamID().."_"..math.Rand(0,100)
+	local col = team.GetColor(LocalPlayer():Team())
+	local matr = Material("trails/smoke")
+	local matr2 = Material("trails/tube")
+	hook.Add("PreDrawEffects",tag,function()
+		local timeex = SysTime()-time
+
+		render.SetMaterial(matr)
+		render.DrawBeam(startp,endp,math.Clamp(10-timeex*10,0,10),1,0,Color(col.r,col.g,col.b,math.Clamp(255-timeex*255,0,255)))
+
+		if(timeex > 4)then
+			hook.Remove("PreDrawEffects",tag)
+		end
+	end)
+else
+
+end
+end
+
 function SWEP:Initialize()
 	self:SetHoldType("ar2")
 end
@@ -87,11 +110,12 @@ function SWEP:PrimaryAttack()
 
 	ply:SetAmmo(999,"SMG1")
 
-	ply:LagCompensation(false)
-
-if (CLIENT and !LocalPlayer():ShouldDrawLocalPlayer())then
-		if(IsValid(self:GetOwner():GetViewModel()))then
+	if (CLIENT and !LocalPlayer():ShouldDrawLocalPlayer())then
+		if(IsValid(self:GetOwner():GetViewModel()) and IsFirstTimePredicted())then
 			ParticleEffectAttach("CH_akmflashfp",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1) --viewmodel only
+			if(self.Primary.Spread == 0)then
+				self:ShootTracer(self:GetOwner():EyePos()-Vector(0,0,20),ply:GetEyeTrace().HitPos)
+			end
 		end
 		if(IsValid(self:GetOwner():GetViewModel()))then
 			timer.Simple(0,function()
@@ -104,6 +128,7 @@ if (CLIENT and !LocalPlayer():ShouldDrawLocalPlayer())then
 	else
 		ParticleEffectAttach("CH_akmflashtp",PATTACH_POINT_FOLLOW,self,1) --world model only
 	end
+	ply:LagCompensation(false)
 end
 
 function SWEP:FireAnimationEvent( pos, ang, event, options ) -- disable default muzzleflashes
@@ -129,14 +154,8 @@ function SWEP:SecondaryAttack()
 		timer.Remove(tag)
 		hook.Add("Think",tag,function()
 			if(!IsValid(self))then return end
-			if CLIENT then
-				self.Primary.Spread = math.Clamp(0.5-(SysTime()-self.AccTimeex),0,0.5)
-				self.Primary.Damage = math.Clamp((SysTime()-self.AccTimeex)*500,0,200)
-			else
-				print(math.Clamp(0.5-(SysTime()-self.AccTimeex)*1.2,0,0.5))
-				self.Primary.Spread = math.Clamp(0.5-(SysTime()-self.AccTimeex)*1.2,0,0.5)
-				self.Primary.Damage = math.Clamp((SysTime()-self.AccTimeex)*700,0,200)
-			end
+			self.Primary.Spread = math.Clamp(0.5-(SysTime()-self.AccTimeex),0,0.5)
+			self.Primary.Damage = math.Clamp((SysTime()-self.AccTimeex)*500,0,200)
 		end)
 		timer.Create(tag,3,1,function()
 			hook.Remove("Think",tag)
