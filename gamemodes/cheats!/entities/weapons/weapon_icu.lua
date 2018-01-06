@@ -91,7 +91,7 @@ function SWEP:PrimaryAttack()
 		Src = ply:GetShootPos(),
 		Dir = ply:GetAimVector(),
 		Spread = Vector(self.Primary.Spread,self.Primary.Spread,0),
-		Tracer = 1,
+		Tracer = 0,
 		Damage = self.Primary.Damage,
 		AmmoType = self.Primary.Ammo,
 		Attacker = ply,
@@ -113,14 +113,19 @@ function SWEP:PrimaryAttack()
 		if(IsValid(self:GetOwner():GetViewModel()) and IsFirstTimePredicted())then
 			ParticleEffectAttach("CH_akmflashfp",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1) --viewmodel only
 			if(self.Primary.Spread == 0)then
-				self:ShootTracer(self:GetOwner():EyePos()-Vector(0,0,20),ply:GetEyeTrace().HitPos)
+				self:ShootTracer(self:GetOwner():EyePos()-Vector(0,0,10),ply:GetEyeTrace().HitPos)
 				local effect = nil
 				if(ply:Team() == 1)then
-					effect = CreateParticleSystem(Entity(0),"CH_icutracer_red",PATTACH_ABSORIGIN,1,self:GetOwner():EyePos()-Vector(0,0,20))
+					effect = CreateParticleSystem(Entity(0),"CH_icutracer_red",PATTACH_ABSORIGIN,1,self:GetOwner():EyePos()-Vector(0,0,10))
+					CreateParticleSystem(Entity(0),"CH_icuhit_red",PATTACH_ABSORIGIN,1,ply:GetEyeTrace().HitPos)
+
 				elseif(ply:Team() == 2)then
-					effect = CreateParticleSystem(Entity(0),"CH_icutracer_blue",PATTACH_ABSORIGIN,1,self:GetOwner():EyePos()-Vector(0,0,20))
+					effect = CreateParticleSystem(Entity(0),"CH_icutracer_blue",PATTACH_ABSORIGIN,1,self:GetOwner():EyePos()-Vector(0,0,10))
+					CreateParticleSystem(Entity(0),"CH_icuhit_blue",PATTACH_ABSORIGIN,1,ply:GetEyeTrace().HitPos)
+
 				elseif(ply:Team() == 3)then
-					effect = CreateParticleSystem(Entity(0),"CH_icutracer_green",PATTACH_ABSORIGIN,1,self:GetOwner():EyePos()-Vector(0,0,20))
+					effect = CreateParticleSystem(Entity(0),"CH_icutracer_green",PATTACH_ABSORIGIN,1,self:GetOwner():EyePos()-Vector(0,0,10))
+					CreateParticleSystem(Entity(0),"CH_icuhit_green",PATTACH_ABSORIGIN,1,self:GetOwner():GetEyeTrace().HitPos)
 				end
 
 				if(effect != nil)then
