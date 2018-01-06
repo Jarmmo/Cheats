@@ -49,13 +49,13 @@ teamf.SetTeam = function(ply,t)
 					teamf.TeamMsg(ply,"Too much players in Red team",Color(255,0,0))
 				else
 					teamf.TeamMsg(ply,"Team set to Red",team.GetColor(t))
-					ply:SetTeam(t)
-					if(!(GetGlobalBool("Deathmatch") and !GetGlobalBool("Lobby")))then
+					if(ply:Team() != 0 and (!GetGlobalBool("Deathmatch") and !GetGlobalBool("Lobby")))then
 						ply:KillSilent()
 						CHSpectate(ply)
 					else
 						ply:Spawn()
 					end
+					ply:SetTeam(t)
 				end
 			end
 		elseif(t == 2)then
@@ -66,12 +66,13 @@ teamf.SetTeam = function(ply,t)
 					teamf.TeamMsg(ply,"Too much players in Blue team",Color(255,0,0))
 				else
 					teamf.TeamMsg(ply,"Team set to Blue",team.GetColor(t))
-					ply:SetTeam(t)
-					if(ply:Team() != 0 and !(GetGlobalBool("Deathmatch") and !GetGlobalBool("Lobby")))then
+					if(ply:Team() != 0 and (!GetGlobalBool("Deathmatch") and !GetGlobalBool("Lobby")))then
+						ply:KillSilent()
 						CHSpectate(ply)
 					else
 						ply:Spawn()
 					end
+					ply:SetTeam(t)
 				end
 			end
 		else

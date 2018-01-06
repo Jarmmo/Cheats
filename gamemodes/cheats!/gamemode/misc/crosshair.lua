@@ -33,8 +33,8 @@ function F_Crosshair()
 		if(wep.Scoped == true)then
 			surface.DrawCircle(CPos.x,CPos.y,math.Clamp((LocalPlayer():GetActiveWeapon().Primary.Spread+0.05),0,1)*115+2,col.r,col.g,col.b,50-((LocalPlayer():GetActiveWeapon().Primary.Spread*50)/50)*100)
 			surface.DrawCircle(CPos.x,CPos.y,(math.Clamp((LocalPlayer():GetActiveWeapon().Primary.Spread+0.05),0,1)*115)+1,0,0,0,50-((LocalPlayer():GetActiveWeapon().Primary.Spread*50)/50)*100)
-			draw.SimpleText(math.ceil(LocalPlayer():GetActiveWeapon().Primary.Damage),"CHAIRD",(ScrW()/2)+2,(ScrH()/2)+22,Color(0,0,0,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
-			draw.SimpleText(math.ceil(LocalPlayer():GetActiveWeapon().Primary.Damage),"CHAIRD",(ScrW()/2),(ScrH()/2)+20,Color(255,255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+			draw.SimpleText(math.ceil(LocalPlayer():GetActiveWeapon().Primary.Damage/2).."%","CHAIRD",(ScrW()/2)+2,(ScrH()/2)+22,Color(0,0,0,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+			draw.SimpleText(math.ceil(LocalPlayer():GetActiveWeapon().Primary.Damage/2).."%","CHAIRD",(ScrW()/2),(ScrH()/2)+20,Color(255,255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
 		end
 		surface.SetDrawColor(0,0,0,200)
 		draw.Circle(CPos.x,CPos.y,4.5,8)

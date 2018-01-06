@@ -49,7 +49,6 @@ if CLIENT then
 	local tag = "CH_ICUTRACER_"..ply:SteamID().."_"..math.Rand(0,100)
 	local col = team.GetColor(LocalPlayer():Team())
 	local matr = Material("trails/smoke")
-	local matr2 = Material("trails/tube")
 	hook.Add("PreDrawEffects",tag,function()
 		local timeex = SysTime()-time
 
@@ -115,6 +114,18 @@ function SWEP:PrimaryAttack()
 			ParticleEffectAttach("CH_akmflashfp",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1) --viewmodel only
 			if(self.Primary.Spread == 0)then
 				self:ShootTracer(self:GetOwner():EyePos()-Vector(0,0,20),ply:GetEyeTrace().HitPos)
+				local effect = nil
+				if(ply:Team() == 1)then
+					effect = CreateParticleSystem(Entity(0),"CH_icutracer_red",PATTACH_ABSORIGIN,1,self:GetOwner():EyePos()-Vector(0,0,20))
+				elseif(ply:Team() == 2)then
+					effect = CreateParticleSystem(Entity(0),"CH_icutracer_blue",PATTACH_ABSORIGIN,1,self:GetOwner():EyePos()-Vector(0,0,20))
+				elseif(ply:Team() == 3)then
+					effect = CreateParticleSystem(Entity(0),"CH_icutracer_green",PATTACH_ABSORIGIN,1,self:GetOwner():EyePos()-Vector(0,0,20))
+				end
+
+				if(effect != nil)then
+					effect:AddControlPoint(1,Entity(0),PATTACH_ABSORIGIN,0,ply:GetEyeTrace().HitPos)
+				end
 			end
 		end
 		if(IsValid(self:GetOwner():GetViewModel()))then
@@ -154,8 +165,8 @@ function SWEP:SecondaryAttack()
 		timer.Remove(tag)
 		hook.Add("Think",tag,function()
 			if(!IsValid(self))then return end
-			self.Primary.Spread = math.Clamp(0.5-(SysTime()-self.AccTimeex),0,0.5)
-			self.Primary.Damage = math.Clamp((SysTime()-self.AccTimeex)*500,0,200)
+			self.Primary.Spread = math.Clamp(0.5-(SysTime()-self.AccTimeex)/1.5,0,0.5)
+			self.Primary.Damage = math.Clamp((SysTime()-self.AccTimeex)*250,0,200)
 		end)
 		timer.Create(tag,3,1,function()
 			hook.Remove("Think",tag)

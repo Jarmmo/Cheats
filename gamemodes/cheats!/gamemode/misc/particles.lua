@@ -1,3 +1,6 @@
 game.AddParticles("particles/CH_particles.pcf")
 PrecacheParticleSystem("CH_akmflashfp")
 PrecacheParticleSystem("CH_muzzlesmoke")
+PrecacheParticleSystem("CH_icutracer_red")
+PrecacheParticleSystem("CH_icutracer_green")
+PrecacheParticleSystem("CH_icutracer_blue")
