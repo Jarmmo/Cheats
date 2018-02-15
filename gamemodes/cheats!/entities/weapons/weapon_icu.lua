@@ -42,25 +42,29 @@ SWEP.AccTimeex = 0
 
 local shoot = Sound("weapons/awp/awp1.wav")
 
-function SWEP:ShootTracer(startp,endp)
-if CLIENT then
-	local ply = self:GetOwner()
-	local time = SysTime()
-	local tag = "CH_ICUTRACER_"..ply:SteamID().."_"..math.Rand(0,100)
-	local col = team.GetColor(LocalPlayer():Team())
-	local matr = Material("trails/smoke")
-	hook.Add("PreDrawEffects",tag,function()
-		local timeex = SysTime()-time
+CH_ICUTRACERS = {}
 
-		render.SetMaterial(matr)
-		render.DrawBeam(startp,endp,math.Clamp(10-timeex*10,0,10),1,0,Color(col.r,col.g,col.b,math.Clamp(255-timeex*255,0,255)))
-
+local CH_ICUMAT = Material("trails/smoke")
+hook.Add("PreDrawEffects","CH_ICUTRACER",function()
+	for k,v in pairs(CH_ICUTRACERS)do
+		render.SetMaterial(CH_ICUMAT)
+		local timeex = SysTime()-v.time
+		render.DrawBeam(v.startp,v.endp,math.Clamp(10-timeex*10,0,10),1,0,Color(v.col.r,v.col.g,v.col.b,math.Clamp(255-timeex*255,0,255)))
 		if(timeex > 4)then
-			hook.Remove("PreDrawEffects",tag)
+			table.remove(CH_ICUTRACERS,k)
 		end
-	end)
-else
+	end
+end)
 
+if CLIENT then
+	function SWEP:ShootTracer(startp,endp)
+	table.insert(CH_ICUTRACERS,{
+		ply = self:GetOwner(),
+		time = SysTime(),
+		col = team.GetColor(self:GetOwner():Team()),
+		startp = startp,
+		endp = endp
+	})
 end
 end
 
@@ -79,7 +83,6 @@ function SWEP:Deploy()
 end
 
 function SWEP:PrimaryAttack()
-
 	if (!self:CanPrimaryAttack()) then return end
 
 	local ply = self:GetOwner()
@@ -111,7 +114,7 @@ function SWEP:PrimaryAttack()
 
 	if (CLIENT and !LocalPlayer():ShouldDrawLocalPlayer())then
 		if(IsValid(self:GetOwner():GetViewModel()) and IsFirstTimePredicted())then
-			ParticleEffectAttach("CH_akmflashfp",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1) --viewmodel only
+			ParticleEffectAttach("CH_akmflashfp",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1)
 			if(self.Primary.Spread == 0)then
 				self:ShootTracer(self:GetOwner():EyePos()-Vector(0,0,10),ply:GetEyeTrace().HitPos)
 				local effect = nil
@@ -142,7 +145,26 @@ function SWEP:PrimaryAttack()
 			end)
 		end
 	else
-		ParticleEffectAttach("CH_akmflashtp",PATTACH_POINT_FOLLOW,self,1) --world model only
+		if(self.Primary.Spread == 0 and CLIENT)then
+			self:ShootTracer(self:GetOwner():EyePos()-Vector(0,0,10),ply:GetEyeTrace().HitPos)
+			local effect = nil
+			if(ply:Team() == 1)then
+				effect = CreateParticleSystem(Entity(0),"CH_icutracer_red",PATTACH_ABSORIGIN,1,self:GetOwner():EyePos()-Vector(0,0,10))
+				CreateParticleSystem(Entity(0),"CH_icuhit_red",PATTACH_ABSORIGIN,1,ply:GetEyeTrace().HitPos)
+
+			elseif(ply:Team() == 2)then
+				effect = CreateParticleSystem(Entity(0),"CH_icutracer_blue",PATTACH_ABSORIGIN,1,self:GetOwner():EyePos()-Vector(0,0,10))
+				CreateParticleSystem(Entity(0),"CH_icuhit_blue",PATTACH_ABSORIGIN,1,ply:GetEyeTrace().HitPos)
+
+			elseif(ply:Team() == 3)then
+				effect = CreateParticleSystem(Entity(0),"CH_icutracer_green",PATTACH_ABSORIGIN,1,self:GetOwner():EyePos()-Vector(0,0,10))
+				CreateParticleSystem(Entity(0),"CH_icuhit_green",PATTACH_ABSORIGIN,1,self:GetOwner():GetEyeTrace().HitPos)
+			end
+
+			if(effect != nil)then
+				effect:AddControlPoint(1,Entity(0),PATTACH_ABSORIGIN,0,ply:GetEyeTrace().HitPos)
+			end
+		end
 	end
 	ply:LagCompensation(false)
 end
@@ -301,9 +323,6 @@ function SWEP:DrawHUD()
 
 					if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)))then
 
-						surface.SetFont("ESPFont1")
-						surface.SetTextColor(col.r,col.g,col.b,255)
-						surface.SetTextPos(pos.x-size/2,pos.y+size)
 						local txt = ""
 						if(IsValid(v[1]:GetActiveWeapon()) and v[1]:GetActiveWeapon():GetClass() == "weapon_bunnyclaw")then
 							txt = "Bunny's Claw"
@@ -314,21 +333,35 @@ function SWEP:DrawHUD()
 						elseif(IsValid(v[1]:GetActiveWeapon()))then
 							txt = v[1]:GetActiveWeapon():GetClass()
 						end
-						surface.DrawText(v[1]:Health().."/100")
-						surface.SetFont("ESPFont2")
-						surface.SetTextPos(pos.x-size/2,pos.y+size+15)
 
-						surface.DrawText(txt)
 						if(v[1]:Crouching())then
 							surface.SetDrawColor(col.r,col.g,col.b,10)
-							surface.DrawRect(pos.x-size/2,pos.y-size,size,size)
+							surface.DrawRect(pos.x-size/2,pos.y-size/2,size,size)
 							surface.SetDrawColor(col.r,col.g,col.b,255)
-							surface.DrawOutlinedRect(pos.x-size/2,pos.y-size,size,size)
+							surface.DrawOutlinedRect(pos.x-size/2,pos.y-size/2,size,size)
+
+							surface.SetFont("ESPFont1")
+							surface.SetTextColor(col.r,col.g,col.b,255)
+							surface.SetTextPos(pos.x-size/2,pos.y+(size/2))
+							surface.DrawText(v[1]:Health().."/100")
+
+							surface.SetTextPos(pos.x-size/2,pos.y+(size/2)+15)
+							surface.SetFont("ESPFont2")
+							surface.DrawText(txt)
 						else
 							surface.SetDrawColor(col.r,col.g,col.b,10)
 							surface.DrawRect(pos.x-size/2,pos.y-size,size,size*2)
 							surface.SetDrawColor(col.r,col.g,col.b,255)
 							surface.DrawOutlinedRect(pos.x-size/2,pos.y-size,size,size*2)
+
+							surface.SetFont("ESPFont1")
+							surface.SetTextColor(col.r,col.g,col.b,255)
+							surface.SetTextPos(pos.x-size/2,pos.y+size)
+							surface.DrawText(v[1]:Health().."/100")
+
+							surface.SetTextPos(pos.x-size/2,pos.y+size+15)
+							surface.SetFont("ESPFont2")
+							surface.DrawText(txt)
 						end
 					end
 				end

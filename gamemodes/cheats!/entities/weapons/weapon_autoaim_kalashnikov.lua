@@ -207,7 +207,7 @@ hook.Add("Think","AIMBOT",function()
 		target = false
 	end
 
-	if (SnapAim) then
+	if (SnapAim and LocalPlayer():Alive()) then
 		local ply = LocalPlayer()
 
 		if(PlaySound)then
@@ -215,7 +215,7 @@ hook.Add("Think","AIMBOT",function()
 			PlaySound = false
 		end
 
-		if((target != false and target:Alive()))then
+		if(target != false and target:Alive() and !target:IsDormant())then
 			local targetbonepos = target:GetBonePosition(target:LookupBone(targetbone))
 			LocalPlayer():SetEyeAngles((targetbonepos - ply:EyePos()):Angle())
 		end
@@ -251,7 +251,7 @@ hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
 					local sizeb = math.Distance(targetipos:ToScreen().x,targetipos:ToScreen().y,targetcompare.x,targetcompare.y)*15
 					local pos = targetipos:ToScreen()
 
-					if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)))then
+					if(((pos.x < ScrW() and pos.y < ScrH()) and (pos.x > 0 and pos.y > 0)) and LocalPlayer():Alive() and !target:IsDormant())then
 						surface.SetDrawColor(col.r,col.g,col.b,80)
 						surface.DrawRect(pos.x-sizeb/2,pos.y-sizeb/2,sizeb,sizeb)
 						surface.DrawOutlinedRect(pos.x-sizeb/2,pos.y-sizeb/2,sizeb,sizeb)
@@ -261,12 +261,10 @@ hook.Add("HUDPaint","AIMBOTTARGETINDICATOR",function()
 				local atarget = GetTarget()
 				if (IsValid(atarget)and(atarget:IsPlayer() or atarget:IsNPC()))then
 					local atargetipos = atarget:GetBonePosition(atarget:LookupBone(targetbone)):ToScreen()
-					if(CheckLOS(atarget)and !SnapAim)then
-
+					if(CheckLOS(atarget)and !SnapAim and LocalPlayer():Alive() and !atarget:IsDormant())then
 						local hitpos = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
 
 						DrawFancyLine(hitpos.x,hitpos.y,atargetipos.x,atargetipos.y,col.r,col.g,col.b)
-
 					end
 				end
 			end
