@@ -319,11 +319,17 @@ function SWEP:DrawHUD()
 						surface.SetTextPos(pos.x-size/2,pos.y+size+15)
 
 						surface.DrawText(txt)
-
-						surface.SetDrawColor(col.r,col.g,col.b,10)
-						surface.DrawRect(pos.x-size/2,pos.y-size,size,size*2)
-						surface.SetDrawColor(col.r,col.g,col.b,255)
-						surface.DrawOutlinedRect(pos.x-size/2,pos.y-size,size,size*2)
+						if(v[1]:Crouching())then
+							surface.SetDrawColor(col.r,col.g,col.b,10)
+							surface.DrawRect(pos.x-size/2,pos.y-size,size,size)
+							surface.SetDrawColor(col.r,col.g,col.b,255)
+							surface.DrawOutlinedRect(pos.x-size/2,pos.y-size,size,size)
+						else
+							surface.SetDrawColor(col.r,col.g,col.b,10)
+							surface.DrawRect(pos.x-size/2,pos.y-size,size,size*2)
+							surface.SetDrawColor(col.r,col.g,col.b,255)
+							surface.DrawOutlinedRect(pos.x-size/2,pos.y-size,size,size*2)
+						end
 					end
 				end
 			end
