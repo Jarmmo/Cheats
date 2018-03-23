@@ -63,6 +63,7 @@ function SWEP:PrimaryAttack()
 	Bullet.Ammotype = self.Primary.Ammo
 	Bullet.Attacker = ply
 	Bullet.HullSize = 1
+	Bullet.Force = 5
 
 	self:FireBullets(Bullet)
 
@@ -78,14 +79,12 @@ function SWEP:PrimaryAttack()
 		if(IsValid(self:GetOwner():GetViewModel()))then
 			ParticleEffectAttach("CH_akmflashfp",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1) --viewmodel only
 		end
-		if(IsValid(self:GetOwner():GetViewModel()))then
-			timer.Simple(0,function()
-				if(IsValid(self:GetOwner():GetViewModel()))then
-					self:GetOwner():GetViewModel():StopParticlesNamed("CH_muzzlesmoke")
-					ParticleEffectAttach("CH_muzzlesmoke",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1)
-				end
-			end)
-		end
+		timer.Simple(0,function()
+			if(IsValid(self:GetOwner()) and IsValid(self:GetOwner():GetViewModel()))then
+				self:GetOwner():GetViewModel():StopParticlesNamed("CH_muzzlesmoke")
+				ParticleEffectAttach("CH_muzzlesmoke",PATTACH_POINT_FOLLOW,self:GetOwner():GetViewModel(),1)
+			end
+		end)
 	else
 		ParticleEffectAttach("CH_akmflashtp",PATTACH_POINT_FOLLOW,self,1) --world model only
 	end

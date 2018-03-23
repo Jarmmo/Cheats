@@ -99,7 +99,7 @@ function SWEP:PrimaryAttack()
 		AmmoType = self.Primary.Ammo,
 		Attacker = ply,
 		HullSize = 1,
-		Force = 10
+		Force = 5
 	}
 
 	self:FireBullets(Bullet)
