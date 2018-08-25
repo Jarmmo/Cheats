@@ -26,6 +26,19 @@ include("misc/anticheat_sv.lua")
 include("ui/teammenu.lua")
 include("misc/particles.lua")
 
+util.AddNetworkString("Cheats:CHDeathr")
+util.AddNetworkString("Cheats:RoundMsg")
+util.AddNetworkString("Cheats:GameStop")
+util.AddNetworkString("Cheats:RoundStart")
+util.AddNetworkString("Cheats:GameLobby")
+util.AddNetworkString("Cheats:GameWin")
+util.AddNetworkString("Cheats:RoundWin")
+util.AddNetworkString("Cheats:RoundLoss")
+util.AddNetworkString("Cheats:RoundTie")
+util.AddNetworkString("Cheats:RoundEnd")
+util.AddNetworkString("Cheats:TeamMsg")
+util.AddNetworkString("Cheats:TeamMenu")
+
 SetGlobalBool("Deathmatch",true)
 SetGlobalInt("Voteamount",0)
 
@@ -63,7 +76,8 @@ end
 
 function GM:PlayerSpawn(ply)
 	ply.SpecTarget = 1
-	ply:SendLua("hook.Call('CHDeathr',GM)")
+	net.Start("Cheats:CHDeathr")
+	net.Send(ply)
 	if(ply:Team() != 0)then
 		ply:UnSpectate()
 		--ply:SetTeam(math.random(1, 2))
