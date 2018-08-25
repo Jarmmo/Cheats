@@ -16,10 +16,6 @@ include("misc/particles.lua")
 
 RoundStarted = false
 
---[[
-util.AddNetworkString("Cheats:GameLobby")
-]]
-
 function GM:ScalePlayerDamage( ply, hitgroup, dmginfo )
 	return false
 end
