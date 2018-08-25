@@ -1,7 +1,10 @@
 teamf = {}
 
 teamf.TeamMsg = function(ply,asd,col)
-	ply:SendLua("hook.Call('TeamMsg', GM, '"..asd.."',{r="..col.r..",g="..col.g..",b="..col.b..",a=255} )")
+	net.Start("TeamMsg")
+	net.WriteString(asd)
+	net.WriteColor(col)
+	net.Send(ply)
 end
 
 teamf.ScrambleDM = function()
