@@ -4,7 +4,8 @@ end
 
 hook.Add("PlayerSay","chatcommands",function(ply,text)
 	if(string.StartWith(string.lower(text),"!team"))then
-		ply:SendLua("TeamMenu()")
+		net.Start("Cheats:TeamMenu")
+		net.Send(ply)
 		return ""
 	end
 
