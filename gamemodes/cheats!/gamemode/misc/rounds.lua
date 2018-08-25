@@ -9,9 +9,9 @@ end
 defaults()
 
 function RoundMsg(asd)
-	for k, v in pairs(player.GetAll()) do
-		v:SendLua("hook.Call('RoundMsg', GM, '"..asd.."' )")
-	end
+	net.Start("Cheats:RoundMsg")
+	net.WriteString(asd)
+	net.Broadcast()
 end
 
 function GameStop()
@@ -25,10 +25,8 @@ function GameStop()
 	defaults()
 	for k,v in pairs(player.GetAll())do
 		if(v:Team() != 0)then
-			v:UnSpectate()
-			v:SendLua("hook.Call('GameStop')")
-			v:SetTeam(3)
-			v:Spawn()
+			net.Start("Cheats:GameStop")
+			net.Send(v)
 		end
 	end
 end
@@ -43,7 +41,10 @@ function RoundStart()
 			v:UnSpectate()
 			v:Spawn()
 			hook.Call("PlayerLoadout", GAMEMODE, v)
-			v:SendLua("hook.Run('RoundStart',"..RoundScore.red..","..RoundScore.blue..")")
+			net.Start("Cheats:RoundStart")
+			net.WriteInt(RoundScore.red, 8)
+			net.WriteInt(RoundScore.blue, 8)
+			net.Send(v)
 		end
 	end
 
@@ -85,7 +86,9 @@ function GameLobby()
 	timer.Create("LOBBYTIMER",LobbyTimer,1,RoundStart)
 	for k,v in pairs(player.GetAll())do
 		if(v:Team() != 0)then
-			v:SendLua("hook.Run('GameLobby',"..LobbyTimer..")")
+			net.Start("Cheats:GameLobby")
+			net.WriteInt(LobbyTimer, 8)
+			net.Send(v)
 		end
 	end
 end
@@ -98,15 +101,18 @@ function RoundEnd(winner)
 		loser = 1
 	end
 	if(winner != 0)then
-		for k,v in pairs(team.GetPlayers(winner))do-- |   |  ||
-			v:SendLua("hook.Call('RoundWin')")------- ____|____
-		end------------------------------------------     |
-		for k,v in pairs(team.GetPlayers(loser))do--- ||  |  |_
-			v:SendLua("hook.Call('RoundLoss')")------  hehexd
+		for k,v in pairs(team.GetPlayers(winner))do
+			net.Start("Cheats:RoundWin")
+			net.Send(v)
+		end
+		for k,v in pairs(team.GetPlayers(loser))do
+			net.Start("Cheats:RoundLoss")
+			net.Send(v)
 		end
 	else
 		for k,v in pairs(player.GetAll())do
-			v:SendLua("hook.Call('RoundTie')")
+			net.Start("Cheats:RoundTie")
+			net.Send(v)
 		end
 	end
 	hook.Remove("Think","CHRoundThink")
@@ -117,7 +123,8 @@ function RoundEnd(winner)
 		timer.Create("ROUNDENDTIMER",RoundEndTime,1,RoundStart)
 		for k,v in pairs(player.GetAll())do
 			if(v:Team() != 0)then
-				v:SendLua("hook.Call('RoundEnd')")
+				net.Start("Cheats:RoundEnd")
+				net.Send(v)
 			end
 		end
 	end
@@ -138,7 +145,8 @@ function GameWin()
 	end)
 	for k,v in pairs(player.GetAll())do
 		if(v:Team() != 0)then
-			v:SendLua("hook.Call('GameWin')")
+			net.Start("Cheats:GameWin")
+			net.Send(v)
 		end
 	end
 end
