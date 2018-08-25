@@ -6,7 +6,8 @@ function CHSpectate(ply)
 		end
 	end
 	if(table.Count(ateam) > 0)then
-		ply:SendLua("hook.Call('CHDeathr',GM)")
+		net.Start("Cheats:CHDeathr")
+		net.Send(ply)
 		ply:Spectate(OBS_MODE_IN_EYE)
 		ply:SpectateEntity(ateam[1])
 		ply.SpecTarget = 1
