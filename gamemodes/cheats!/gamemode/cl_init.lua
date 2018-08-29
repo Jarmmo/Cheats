@@ -28,13 +28,15 @@ hook.Add("HUDPaint","SpawnSelectTeam",function()
 end)
 
 local SimpleNetMessages = {
-"CHDeathr","GameWin","GameStop",
-"RoundWin", "RoundLoss","RoundTie"
+"CHDeathr","RoundWin", "RoundLoss","RoundTie"
 }
 for k,v in next,SimpleNetMessages do
 	net.Receive("Cheats:"..v, function() hook.Run(v) end)
 end
 
+net.Receive("Cheats:GameStop", function() RoundStarted = false end)
+net.Receive("Cheats:GameWin", function() RoundStarted = false end)
+net.Receive("Cheats:GameWin", function() RoundStarted = false end)
 net.Receive("Cheats:RoundMsg", function() local msg = net.ReadString() hook.Run('RoundMsg', msg) end)
 net.Receive("Cheats:RoundStart", function()
 	local red, blue = net.ReadInt(8), net.ReadInt(8)
