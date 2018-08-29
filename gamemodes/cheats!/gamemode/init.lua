@@ -16,7 +16,6 @@ AddCSLuaFile("misc/particles.lua")
 
 include("misc/spec.lua")
 include("misc/chatcommands.lua")
-include("misc/votemap.lua")
 include("shared.lua")
 include("misc/rounds.lua")
 include("misc/teamfuncs.lua")
