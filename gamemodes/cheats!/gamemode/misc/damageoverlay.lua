@@ -34,7 +34,7 @@ end)
 net.Receive("Cheats:DamageOverlay",function()
 	local float = net.ReadFloat()
 	local steamid = net.ReadString()
-	local ent = player.GetBySteamID64(steamid)
+	local ent = steamid ~= "BOT" and player.GetBySteamID64(steamid) or player.GetBots()[1]
 	
 	local pos = ent:GetBonePosition(ent:LookupBone("ValveBiped.Bip01_Head1"))
 	
