@@ -6,7 +6,6 @@ if SERVER then
 		
 		net.Start("Cheats:DamageOverlay") 
 		net.WriteFloat(dmg:GetDamage())
-		net.WriteString(ply:SteamID64())
 		net.Send(attacker)
 	end
 	
@@ -15,39 +14,42 @@ end
 
 -- Client side ok
 
-local damagetable = {}
+local damagetable = 
+{
+	StartAt = 0,
+	Damage = 0,
+}
+
+local function magicnumber(num)
+	return math.Rand(-math.Clamp(math.Clamp(num,0,100)/20,0,5),math.Clamp(math.Clamp(num,0,100)/20,0,5))
+end
 
 hook.Add("HUDPaint", "DamageOverlay", function()
-	for k,v in next,damagetable do
-		local egg = math.Clamp(CurTime() - v.StartAt,0,1)
-		
-		local alpha = 255 - 255 * egg
-		local pos = v.Pos:ToScreen()
-		
-		surface.SetFont("Font1")
-		surface.SetTextColor(255,255,255,alpha)
-		surface.SetTextPos(pos.x,pos.y)
-		surface.DrawText("-"..tostring(math.floor(v.Damage)))
+	local timeex = SysTime() - damagetable.StartAt
+
+	if(timeex > 1)then
+		damagetable.Damage = 0
 	end
+
+	draw.Text({text = tostring(math.floor(damagetable.Damage)),
+		font = "Font2",
+		pos = {ScrW()/2+magicnumber(damagetable.Damage),ScrH()/2-25+magicnumber(damagetable.Damage)},
+		xalign = TEXT_ALIGN_CENTER, yalign = TEXT_ALIGN_CENTER,
+		color = Color(100,0,0,255-timeex*255)})
+	draw.Text({text = tostring(math.floor(damagetable.Damage)),
+		font = "Font2",
+		pos = {ScrW()/2+magicnumber(damagetable.Damage)/2,ScrH()/2-25+magicnumber(damagetable.Damage)/2},
+		xalign = TEXT_ALIGN_CENTER, yalign = TEXT_ALIGN_CENTER,
+		color = Color(255,0,0,255-timeex*255)})
+	draw.Text({text = tostring(math.floor(damagetable.Damage)),
+		font = "Font2",
+		pos = {ScrW()/2,ScrH()/2-25},
+		xalign = TEXT_ALIGN_CENTER, yalign = TEXT_ALIGN_CENTER,
+		color = Color(255,100,100,255-timeex*255)})
+
 end)
 
 net.Receive("Cheats:DamageOverlay",function()
-	local float = net.ReadFloat()
-	local steamid = net.ReadString()
-	local ent = steamid ~= "BOT" and player.GetBySteamID64(steamid) or player.GetBots()[1]
-	
-	local pos = ent:GetBonePosition(ent:LookupBone("ValveBiped.Bip01_Head1"))
-	
-	if damagetable[steamid] then
-		if CurTime()-damagetable[steamid].StartAt < 1 then
-			float = float + damagetable[steamid].Damage
-			pos = damagetable[steamid].Pos
-		end
-	end
-	
-	damagetable[steamid] = {
-		StartAt = CurTime(),
-		Damage = float,
-		Pos = pos
-	}
+	damagetable.StartAt = SysTime()
+	damagetable.Damage = damagetable.Damage + net.ReadFloat()
 end)

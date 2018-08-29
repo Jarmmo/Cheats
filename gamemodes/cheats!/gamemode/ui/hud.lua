@@ -6,6 +6,13 @@ local function CreateFont()
 		weight = 500,
 		antialias = true
 	})
+	surface.CreateFont( "Font2", {
+		font = "Roboto",
+		extended = true,
+		size = 30,
+		weight = 700,
+		antialias = true
+	})
 end
 CreateFont()
 
