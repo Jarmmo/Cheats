@@ -6,7 +6,7 @@ if SERVER then
 		
 		net.Start("Cheats:DamageOverlay") 
 		net.WriteFloat(dmg:GetDamage())
-		net.WriteEntity(ply)
+		net.WriteString(ply:SteamID64())
 		net.Send(attacker)
 	end
 	
@@ -33,8 +33,8 @@ end)
 
 net.Receive("Cheats:DamageOverlay",function()
 	local float = net.ReadFloat()
-	local ent = net.ReadEntity()
-	local steamid = ent:SteamID64()
+	local steamid = net.ReadString()
+	local ent = player.GetBySteamID64(steamid)
 	
 	local pos = ent:GetBonePosition(ent:LookupBone("ValveBiped.Bip01_Head1"))
 	
