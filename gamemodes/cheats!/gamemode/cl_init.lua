@@ -36,7 +36,6 @@ end
 
 net.Receive("Cheats:GameStop", function() RoundStarted = false end)
 net.Receive("Cheats:GameWin", function() RoundStarted = false end)
-net.Receive("Cheats:GameWin", function() RoundStarted = false end)
 net.Receive("Cheats:RoundMsg", function() local msg = net.ReadString() hook.Run('RoundMsg', msg) end)
 net.Receive("Cheats:RoundStart", function()
 	local red, blue = net.ReadInt(8), net.ReadInt(8)
