@@ -1,5 +1,5 @@
 GM.Name 	= "Cheats!"
-GM.Author 	= "Jarmmo"
+GM.Author 	= "Jarmmo, W1C0P33, twentysix"
 GM.TeamBased = true
 
 function GM:CreateTeams()

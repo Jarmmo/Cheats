@@ -1,7 +1,6 @@
 include("shared.lua")
 include("misc/crosshair.lua")
 include("misc/quickswitch.lua")
-include("misc/votemap.lua")
 include("misc/anticheat_cl.lua")
 include("ui/hud.lua")
 include("ui/teammenu.lua")

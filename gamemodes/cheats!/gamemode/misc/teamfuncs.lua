@@ -1,7 +1,7 @@
 teamf = {}
 
 teamf.TeamMsg = function(ply,asd,col)
-	net.Start("TeamMsg")
+	net.Start("Cheats:TeamMsg")
 	net.WriteString(asd)
 	net.WriteColor(col)
 	net.Send(ply)
