@@ -75,6 +75,12 @@ function GM:ScalePlayerDamage( ply, hitgroup, dmginfo )
 	dmginfo:ScaleDamage(1)
 end
 
+function GM:ShouldCollide( ent1, ent2 )
+	if ent1:IsPlayer() or ent2:IsPlayer() then return false end
+	
+	return true
+end
+
 function GM:PlayerSpawn(ply)
 	ply.SpecTarget = 1
 	net.Start("Cheats:CHDeathr")
