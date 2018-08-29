@@ -47,6 +47,6 @@ net.Receive("Cheats:DamageOverlay",function()
 	damagetable[steamid] = {
 		StartAt = CurTime(),
 		Damage = float,
-		Pos = damagetable[steamid].Pos or pos
+		Pos = damagetable[steamid] and damagetable[steamid].Pos or pos
 	}
 end)
