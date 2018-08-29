@@ -23,11 +23,11 @@ teamf.ScrambleDM = function()
 		table.insert(t2,t1[rnum])
 		table.remove(t1,rnum)
 	end
-	for k,v in pairs(t1)do
+	for k,v in next,t1 do
 		v:SetTeam(1)
 		v:Spawn()
 	end
-	for k,v in pairs(t2)do
+	for k,v in next,t2 do
 		v:SetTeam(2)
 		v:Spawn()
 	end

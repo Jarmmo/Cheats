@@ -36,6 +36,7 @@ util.AddNetworkString("Cheats:RoundTie")
 util.AddNetworkString("Cheats:RoundEnd")
 util.AddNetworkString("Cheats:TeamMsg")
 util.AddNetworkString("Cheats:TeamMenu")
+util.AddNetworkString("Cheats:DamageOverlay")
 
 SetGlobalBool("Deathmatch",true)
 SetGlobalInt("Voteamount",0)
