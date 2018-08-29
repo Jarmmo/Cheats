@@ -38,8 +38,10 @@ net.Receive("Cheats:DamageOverlay",function()
 	
 	local pos = ent:GetBonePosition(ent:LookupBone("ValveBiped.Bip01_Head1"))
 	
-	if CurTime()-damagetable[steamid].StartAt < 1 then
-		float = float + damagetable[steamid].Damage
+	if damagetable[steamid] then
+		if CurTime()-damagetable[steamid].StartAt < 1 then
+			float = float + damagetable[steamid].Damage
+		end
 	end
 	
 	damagetable[steamid] = {
