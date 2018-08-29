@@ -2,7 +2,7 @@ if SERVER then
 	function GM:EntityTakeDamage(ply,dmg)
 		local attacker = dmg:GetAttacker()
 		
-		if not ply:IsPlayer() and not attacker:IsPlayer() then return end
+		if not ply:IsPlayer() or not attacker:IsPlayer() then return end
 		
 		net.Start("Cheats:DamageOverlay") 
 		net.WriteFloat(dmg:GetDamage())
