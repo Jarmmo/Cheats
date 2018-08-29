@@ -27,7 +27,7 @@ hook.Add("HUDPaint", "DamageOverlay", function()
 		surface.SetFont("Font1")
 		surface.SetTextColor(255,255,255,alpha)
 		surface.SetTextPos(pos.x,pos.y)
-		surface.DrawText("-"..tostring(v.Damage))
+		surface.DrawText("-"..tostring(math.floor(v.Damage)))
 	end
 end)
 
@@ -41,12 +41,13 @@ net.Receive("Cheats:DamageOverlay",function()
 	if damagetable[steamid] then
 		if CurTime()-damagetable[steamid].StartAt < 1 then
 			float = float + damagetable[steamid].Damage
+			pos = damagetable[steamid].Pos
 		end
 	end
 	
 	damagetable[steamid] = {
 		StartAt = CurTime(),
 		Damage = float,
-		Pos = damagetable[steamid] and damagetable[steamid].Pos or pos
+		Pos = pos
 	}
 end)
