@@ -27,13 +27,19 @@ hook.Add("PlayerSay","chatcommands",function(ply,text)
 				SetGlobalInt("Voteamount",0)
 			else
 				for k, v in pairs(player.GetAll()) do
-					v:ChatPrint(ply:Name().." as voted to start a game! ("..GetGlobalInt("Voteamount").."/"..math.ceil(0.75*table.Count(player.GetAll()))..")")
+					v:ChatPrint(ply:Name().." has voted to start a game! ("..GetGlobalInt("Voteamount").."/"..math.ceil(0.75*table.Count(player.GetAll()))..")")
 					v:ChatPrint("Type !start to vote!")
 				end
 			end
 			return ""
 		elseif(ply:GetNWBool("Voted"))then
-			ply:ChatPrint("Already voted!")
+			SetGlobalInt("Voteamount",GetGlobalInt("Voteamount")-1)
+			ply:SetNWBool("Voted", false)
+			for k, v in pairs(player.GetAll()) do
+				
+				v:ChatPrint(ply:Name() .. "has unvoted to start a game! ("..GetGlobalInt("Voteamount").."/"..math.ceil(0.75*table.Count(player.GetAll()))..")")
+				v:ChatPrint("Type !start to vote!")
+			end
 			return ""
 		end
 	end
